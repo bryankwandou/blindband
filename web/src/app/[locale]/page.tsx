@@ -16,7 +16,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   if (!isLocale(locale)) notFound();
 
   const t = getDictionary(locale);
-  const { round, attestation } = published;
+  const { round } = published;
   const nf = new Intl.NumberFormat(INTL[locale]);
 
   const stats = [
@@ -278,11 +278,17 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         </Reveal>
 
         <Reveal delay={0.16}>
-          <dl className="mt-4 grid gap-4 rounded-xl border border-line bg-ink-raised p-6 sm:grid-cols-3">
-            <Meta label={t.pages.round.attestation} value={attestation.ruleset} />
-            <Meta label="slot" value={String(anchor.slot)} />
-            <Meta label="signer" value={anchor.signer} truncate />
-          </dl>
+          <p className="mt-5 max-w-3xl text-[13.5px] leading-relaxed text-faint">
+            {t.verify.sampleNote.split("`").map((part, i) =>
+              i % 2 === 1 ? (
+                <code key={i} className="font-mono text-quiet">
+                  {part}
+                </code>
+              ) : (
+                part
+              ),
+            )}
+          </p>
         </Reveal>
       </section>
 
@@ -351,16 +357,5 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         </Reveal>
       </section>
     </>
-  );
-}
-
-function Meta({ label, value, truncate }: { label: string; value: string; truncate?: boolean }) {
-  return (
-    <div className="min-w-0">
-      <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-faint">{label}</dt>
-      <dd className={`mt-1.5 font-mono text-[12.5px] text-quiet ${truncate ? "truncate" : ""}`}>
-        {value}
-      </dd>
-    </div>
   );
 }
