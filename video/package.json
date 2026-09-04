@@ -1,0 +1,23 @@
+{
+  "name": "blindband-video",
+  "private": true,
+  "version": "0.1.0",
+  "description": "The Blindband demo video. Every number in it is read from the round the enclave actually produced.",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render Demo out/blindband-demo.mp4 --codec h264 --crf 18 --color-space bt709",
+    "render:draft": "remotion render Demo out/draft.mp4 --codec h264 --crf 26 --scale 0.5",
+    "still": "remotion still Demo out/poster.png --frame 90"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.520",
+    "@remotion/google-fonts": "^4.0.520",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "remotion": "4.0.520"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}

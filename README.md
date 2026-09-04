@@ -15,6 +15,7 @@ same digest is written to Solana devnet — so a round cannot be quietly swapped
 for a friendlier one after the fact.
 
 - **Live site** — https://blindband.vercel.app (English, Bahasa Indonesia, 中文)
+- **Demo video** — https://blindband.vercel.app/demo/blindband-demo.mp4 (63 s, no narration)
 - **Mirror** — https://bryankwandou.github.io/blindband, static export of the same commit
 - **Anchored round** — [`5uczxVJU…AJE3Hf` on devnet](https://explorer.solana.com/tx/5uczxVJUm4zjwDms6R5eDC9H1G3gypRUuDA1p2B1x14bXP8QCezrFxZLgfRzfGCJLG3HDJ7ubfsWpiZBG4AJE3Hf?cluster=devnet)
 - **Digest** — `e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef`
@@ -112,6 +113,7 @@ agent/src/verify.ts      offline + on-chain + enclave checks
 agent/state.json         the only state outside git
 
 web/                     the public site, 3 locales, statically generated
+video/                   the demo video, as Remotion compositions
 ```
 
 The split between `policy.rs`/`stats.rs` and `ledger.rs` is deliberate: the
@@ -121,6 +123,17 @@ credits. That is what keeps this maintainable by whoever inherits it.
 ```bash
 cd contract && cargo test   # 23 tests, host toolchain, under a second
 ```
+
+### The video
+
+```bash
+cd video && npm install
+npm run render        # out/blindband-demo.mp4
+```
+
+Every figure in it — the firm count, the bands, the withheld reasons, the
+digest, the slot — is read from `web/src/data/`, the same files the site reads.
+A caption cannot go stale without the round changing underneath it.
 
 ## Host capabilities
 
