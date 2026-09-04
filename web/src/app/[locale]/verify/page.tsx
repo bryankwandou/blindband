@@ -32,34 +32,6 @@ export default async function VerifyPage({ params }: { params: Promise<{ locale:
         </div>
       </Reveal>
 
-      {/* The middle check has no widget, because it is the one the browser
-          cannot do alone — it is stated here so the numbering is not a lie. */}
-      <Reveal delay={0.1}>
-        <section className="mt-4 rounded-xl border border-line bg-ink-raised p-6">
-          <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-faint">02</p>
-          <h2 className="mt-2 text-[17px] font-medium text-ivory">{t.verify.step2}</h2>
-          <p className="mt-2 max-w-2xl text-[13.5px] leading-relaxed text-quiet">
-            {t.verify.step2Body}
-          </p>
-          <dl className="mt-5 grid gap-4 sm:grid-cols-3">
-            <div>
-              <dt className="text-[12px] text-faint">signature</dt>
-              <dd className="mt-1 break-all font-mono text-[12px] text-quiet">{anchor.signature}</dd>
-            </div>
-            <div>
-              <dt className="text-[12px] text-faint">slot</dt>
-              <dd className="mt-1 font-mono text-[12px] text-quiet">{anchor.slot}</dd>
-            </div>
-            <div>
-              <dt className="text-[12px] text-faint">anchored at</dt>
-              <dd className="mt-1 font-mono text-[12px] text-quiet">
-                {anchor.anchoredAt.replace("T", " ").slice(0, 19)} UTC
-              </dd>
-            </div>
-          </dl>
-        </section>
-      </Reveal>
-
       <Reveal delay={0.12}>
         <p className="mt-8 max-w-3xl text-[13.5px] leading-relaxed text-faint">
           {t.verify.sampleNote.split("`").map((part, i) =>

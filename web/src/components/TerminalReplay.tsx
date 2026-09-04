@@ -93,6 +93,7 @@ export function TerminalReplay({ className = "" }: { className?: string }) {
   return (
     <div
       ref={frame}
+      data-walkthrough=""
       className={`overflow-hidden rounded-xl border border-line bg-ink-raised ${className}`}
     >
       <div className="flex items-center gap-3 border-b border-line px-4 py-2.5">
