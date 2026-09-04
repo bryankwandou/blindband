@@ -5,7 +5,8 @@
 | | |
 |---|---|
 | Repository | https://github.com/bryankwandou/blindband |
-| Live site | https://bryankwandou.github.io/blindband (English · Bahasa Indonesia · 中文) |
+| Live site | https://blindband.vercel.app (English · Bahasa Indonesia · 中文) |
+| Mirror | https://bryankwandou.github.io/blindband — same commit, static export |
 | Tenant DID | `did:t3n:efd91540b28ceaccc876f9d1603d3f7f0d91d64d` |
 | Contract | `z:efd91540…d91d64d:blindband` v0.2.0, id 871 |
 | Round | `2026-q1`, run 4 September 2026 on the sandbox |
@@ -162,6 +163,10 @@ This was the judging criterion the design was actually organised around.
   wrong (session vs. flat invoke, and writing the round verbatim).
 - **The site is static.** Three locales, fifteen prerendered pages, no runtime
   backend, no API route that could be drained of test credits by a crawler.
+- **It is not tied to one host.** The default build is the Vercel one; setting
+  `BB_STATIC_EXPORT=1` produces a folder of files instead, which is what the
+  GitHub Pages mirror serves from the same commit. Whoever inherits this is not
+  inheriting a hosting account along with it.
 
 ## 7. The site
 
@@ -180,7 +185,7 @@ them would hide the most interesting thing the enclave did.
 ## 8. Bugs
 
 Eight write-ups with symptom, cause, fix and cost are on
-[the docs page](https://bryankwandou.github.io/blindband/en/docs/) and in
+[the docs page](https://blindband.vercel.app/en/docs) and in
 [`web/src/lib/bugs.ts`](../../web/src/lib/bugs.ts). Five are platform issues,
 three are our own — kept in the report because pretending otherwise would make
 the other five less credible.

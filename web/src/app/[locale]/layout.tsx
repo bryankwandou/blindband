@@ -28,7 +28,7 @@ export async function generateMetadata({
   return {
     title: t.meta.title,
     description: t.meta.description,
-    metadataBase: new URL("https://bryankwandou.github.io/blindband"),
+    metadataBase: new URL("https://blindband.vercel.app"),
     alternates: {
       canonical: `/${locale}`,
       languages: Object.fromEntries(LOCALES.map((l) => [l, `/${l}`])),
