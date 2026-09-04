@@ -1,0 +1,49 @@
+/// Blindband — confidential benchmarking contract for T3N z-space tenants.
+///
+/// A consortium of organisations contributes raw compensation records that
+/// never leave the enclave. The contract aggregates them into percentile
+/// bands, enforces an antitrust safe-harbour ruleset before any cell is
+/// published, and signs the resulting round digest with the cluster key so
+/// the aggregate can be verified off-network.
+///
+/// Imported host capabilities:
+///   - tenant-context: tenant DID, cluster timestamp, calling user DID
+///   - logging:        operational lines (never record values)
+///   - kv-store:       record ledger, published rounds, and the claims digest
+///                    that binds a round into its transaction receipt
+package z:blindband@0.1.0;
+
+world blindband {
+  import host:tenant/tenant-context@1.0.0;
+  import host:interfaces/logging@2.1.0;
+  import host:interfaces/kv-store@2.1.0;
+
+  export contracts;
+}
+
+interface contracts {
+  record generic-input {
+    input: option<list<u8>>,
+    user-profile: option<list<u8>>,
+    context: option<list<u8>>,
+  }
+
+  /// Accept one contributor record into the sealed ledger for a round.
+  submit-record: func(req: generic-input) -> result<list<u8>, string>;
+
+  /// Accept many records in a single invocation. A consortium member uploads a
+  /// payroll extract in one go, and one round of onboarding costs one execution
+  /// instead of one per employee.
+  submit-batch: func(req: generic-input) -> result<list<u8>, string>;
+
+  /// Aggregate every record in a round, apply the safe-harbour gates and
+  /// publish the signed result. Raw records never cross this boundary.
+  compute-round: func(req: generic-input) -> result<list<u8>, string>;
+
+  /// Read a previously published round back out of the ledger.
+  get-round: func(req: generic-input) -> result<list<u8>, string>;
+
+  /// Confirm a submission receipt was counted in a published round without
+  /// disclosing the underlying value.
+  verify-receipt: func(req: generic-input) -> result<list<u8>, string>;
+}

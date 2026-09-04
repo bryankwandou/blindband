@@ -1,0 +1,38 @@
+[
+    {
+        "commitment":  "a7498c7bc809d08da5da9046459bbf9482691de7243d793d38793c6b101696c2",
+        "round_id":  "2026-q1",
+        "cell":  "backend engineer|l4|sea",
+        "published":  true
+    },
+    {
+        "commitment":  "e69222ae6990760c91c659df7e372e90fcd1f8ffc9e96385dd18ad90780fc667",
+        "round_id":  "2026-q1",
+        "cell":  "backend engineer|l5|sea",
+        "published":  true
+    },
+    {
+        "commitment":  "fcfd14ee3236ba8f5b6d43d8f9f7c9f76cb3230efd884e41394e6e1fe1397c55",
+        "round_id":  "2026-q1",
+        "cell":  "backend engineer|l6|sea",
+        "published":  true
+    },
+    {
+        "commitment":  "62916dabcc89497232b1352c75a36ab6bb7f1098a22dd814e3a1f595e3984292",
+        "round_id":  "2026-q1",
+        "cell":  "product designer|l4|sea",
+        "published":  true
+    },
+    {
+        "commitment":  "bec1d67202920940461b040607a0638324a6bfc80e708b24a12700ad5fc58163",
+        "round_id":  "2026-q1",
+        "cell":  "data scientist|l5|sea",
+        "published":  false
+    },
+    {
+        "commitment":  "81eab8109629799f30956290cc47842e580df0df5535f0b0b248c9600135defd",
+        "round_id":  "2026-q1",
+        "cell":  "engineering manager|m2|sea",
+        "published":  false
+    }
+]

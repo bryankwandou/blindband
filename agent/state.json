@@ -1,0 +1,16 @@
+{
+  "environment": "sandbox",
+  "tenantDid": "did:t3n:efd91540b28ceaccc876f9d1603d3f7f0d91d64d",
+  "contractName": "z:efd91540b28ceaccc876f9d1603d3f7f0d91d64d:blindband",
+  "contractId": 871,
+  "contractIds": [
+    870,
+    871
+  ],
+  "contractVersion": "0.2.0",
+  "maps": [
+    "z:efd91540b28ceaccc876f9d1603d3f7f0d91d64d:bb-records",
+    "z:efd91540b28ceaccc876f9d1603d3f7f0d91d64d:bb-rounds"
+  ],
+  "deployedAt": "2026-09-03T15:48:59.356Z"
+}

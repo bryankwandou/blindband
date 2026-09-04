@@ -1,0 +1,17 @@
+{
+  "signature": "5uczxVJUm4zjwDms6R5eDC9H1G3gypRUuDA1p2B1x14bXP8QCezrFxZLgfRzfGCJLG3HDJ7ubfsWpiZBG4AJE3Hf",
+  "slot": 492821211,
+  "explorerUrl": "https://explorer.solana.com/tx/5uczxVJUm4zjwDms6R5eDC9H1G3gypRUuDA1p2B1x14bXP8QCezrFxZLgfRzfGCJLG3HDJ7ubfsWpiZBG4AJE3Hf?cluster=devnet",
+  "cluster": "devnet",
+  "signer": "C3otspAauyPNbAx9NA4wkH7P8hxhxhb1dyfqzhSmzaj9",
+  "payload": {
+    "p": "blindband",
+    "v": 1,
+    "r": "2026-q1",
+    "d": "e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef",
+    "rs": "blindband-safe-harbour/v1",
+    "pub": 4,
+    "sup": 2
+  },
+  "anchoredAt": "2026-09-04T03:20:46.110Z"
+}
