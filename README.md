@@ -14,7 +14,7 @@ round is then hashed, the digest is bound into the transaction receipt, and the
 same digest is written to Solana devnet — so a round cannot be quietly swapped
 for a friendlier one after the fact.
 
-- **Live site** — https://blindband.vercel.app (English, Bahasa Indonesia, 中文)
+- **Live site** — https://bryankwandou.github.io/blindband (English, Bahasa Indonesia, 中文)
 - **Anchored round** — [`5uczxVJU…AJE3Hf` on devnet](https://explorer.solana.com/tx/5uczxVJUm4zjwDms6R5eDC9H1G3gypRUuDA1p2B1x14bXP8QCezrFxZLgfRzfGCJLG3HDJ7ubfsWpiZBG4AJE3Hf?cluster=devnet)
 - **Digest** — `e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef`
 
@@ -131,7 +131,7 @@ there is no egress surface to review and nothing to allowlist.
 ## Bugs and platform notes
 
 Eight write-ups — five platform, three of our own — are on
-[the docs page](https://blindband.vercel.app/en/docs), with symptom, cause, fix
+[the docs page](https://bryankwandou.github.io/blindband/en/docs/), with symptom, cause, fix
 and what each one cost. The three that will cost the next person the most time:
 
 1. **The flat `invoke()` path rejects a sandbox-claimed API key.** It expects an
