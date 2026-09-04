@@ -7,6 +7,7 @@
 | Repository | https://github.com/bryankwandou/blindband |
 | Live site | https://blindband.vercel.app (English · Bahasa Indonesia · 中文) |
 | Mirror | https://bryankwandou.github.io/blindband — same commit, static export |
+| Demo video | https://blindband.vercel.app/demo/blindband-demo.mp4 — 63 s, silent, captions on screen |
 | Tenant DID | `did:t3n:efd91540b28ceaccc876f9d1603d3f7f0d91d64d` |
 | Contract | `z:efd91540…d91d64d:blindband` v0.2.0, id 871 |
 | Round | `2026-q1`, run 4 September 2026 on the sandbox |
@@ -140,6 +141,14 @@ Each step refuses to proceed if the previous left something inconsistent.
 `anchor` recomputes the digest locally and will not write to the chain if it
 does not match — anchoring an unverified digest would put a number on a public
 ledger and call it proof.
+
+There is also a 63-second video, in `video/` as Remotion compositions and
+served at
+[`/demo/blindband-demo.mp4`](https://blindband.vercel.app/demo/blindband-demo.mp4).
+It is silent and captioned on screen, and every figure in it — the firm count,
+the bands, the withheld reasons, the digest, the slot — is read from the same
+two data files the site reads. `npm run render` in `video/` rebuilds it, so a
+number in the video cannot drift from the round it claims to show.
 
 ## 6. Ease of maintenance
 
