@@ -1,2 +1,13 @@
-[build]
-target = "wasm32-wasip2"
+# Deliberately no `[build] target`.
+#
+# Setting the default target to wasm32-wasip2 makes `cargo build` shorter and
+# `cargo test` impossible: cargo happily compiles the test binaries to wasm and
+# then tries to execute them, which fails as "%1 is not a valid Win32
+# application" — an error that says nothing about the cause.
+#
+# The gates are the product, so the test path is the one that stays frictionless.
+# The component build names its target explicitly instead:
+#
+#     cargo build --target wasm32-wasip2 --release
+#
+# which is what `agent/src/deploy.ts` looks for and what the README documents.
