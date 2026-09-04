@@ -1,0 +1,23 @@
+# Secrets. `.env.example` is committed; `.env` never is — it holds the tenant
+# API key and the devnet signing seed.
+.env
+.env.local
+.env.*.local
+
+# Rust
+target/
+**/*.rs.bk
+
+# Node
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel
+.vercel
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,74 @@
+{
+  "roundId": "2026-q1",
+  "ruleset": "blindband-safe-harbour/v1",
+  "verifiedAt": "2026-09-04T03:25:22.212Z",
+  "offline": {
+    "ok": true,
+    "claimed": "e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef",
+    "recomputed": "e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef",
+    "bytesHashed": 1589
+  },
+  "chain": {
+    "signature": "5uczxVJUm4zjwDms6R5eDC9H1G3gypRUuDA1p2B1x14bXP8QCezrFxZLgfRzfGCJLG3HDJ7ubfsWpiZBG4AJE3Hf",
+    "slot": 492821211,
+    "blockTime": 1788492044,
+    "payload": {
+      "p": "blindband",
+      "v": 1,
+      "r": "2026-q1",
+      "d": "e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef",
+      "rs": "blindband-safe-harbour/v1",
+      "pub": 4,
+      "sup": 2
+    },
+    "explorerUrl": "https://explorer.solana.com/tx/5uczxVJUm4zjwDms6R5eDC9H1G3gypRUuDA1p2B1x14bXP8QCezrFxZLgfRzfGCJLG3HDJ7ubfsWpiZBG4AJE3Hf?cluster=devnet"
+  },
+  "enclave": [
+    {
+      "label": "receipt in a published band (backend engineer|l4|sea)",
+      "commitment": "a7498c7bc809d08da5da9046459bbf9482691de7243d793d38793c6b101696c2",
+      "expectIncluded": true,
+      "expectCounted": true,
+      "proof": {
+        "commitment": "a7498c7bc809d08da5da9046459bbf9482691de7243d793d38793c6b101696c2",
+        "round_id": "2026-q1",
+        "included": true,
+        "cell": "backend engineer|l4|sea",
+        "counted_in_published_band": true,
+        "note": "Counted in a published band."
+      },
+      "ok": true
+    },
+    {
+      "label": "receipt in a withheld cell (data scientist|l5|sea)",
+      "commitment": "bec1d67202920940461b040607a0638324a6bfc80e708b24a12700ad5fc58163",
+      "expectIncluded": true,
+      "expectCounted": false,
+      "proof": {
+        "commitment": "bec1d67202920940461b040607a0638324a6bfc80e708b24a12700ad5fc58163",
+        "round_id": "2026-q1",
+        "included": true,
+        "cell": "data scientist|l5|sea",
+        "counted_in_published_band": false,
+        "note": "Held in the ledger. Its cell was withheld, or the round has not run yet."
+      },
+      "ok": true
+    },
+    {
+      "label": "forged commitment — the negative control",
+      "commitment": "0000000000000000000000000000000000000000000000000000000000000000",
+      "expectIncluded": false,
+      "expectCounted": false,
+      "proof": {
+        "commitment": "0000000000000000000000000000000000000000000000000000000000000000",
+        "round_id": "2026-q1",
+        "included": false,
+        "cell": null,
+        "counted_in_published_band": false,
+        "note": "No row in this round carries that commitment."
+      },
+      "ok": true
+    }
+  ],
+  "failures": 0
+}

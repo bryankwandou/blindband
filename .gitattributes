@@ -1,0 +1,8 @@
+# The round is hashed byte for byte. Line-ending normalisation would change the
+# digest and turn a valid round into an apparent forgery, so git must leave
+# these files exactly as written. The current round happens to contain no
+# newlines at all, but that is the encoder's choice, not a guarantee.
+web/src/data/round.json   -text
+agent/data/round.json     -text
+
+* text=auto

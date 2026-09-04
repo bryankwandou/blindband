@@ -1,0 +1,28 @@
+{
+  "name": "blindband-agent",
+  "version": "0.1.0",
+  "description": "Blindband agent: deploys the TEE contract, runs consortium rounds, anchors each round on Solana devnet.",
+  "main": "index.js",
+  "scripts": {
+    "preflight": "tsx src/preflight.ts",
+    "deploy": "tsx src/deploy.ts",
+    "submit": "tsx src/submit.ts",
+    "round": "tsx src/round.ts",
+    "anchor": "tsx src/anchor.ts",
+    "verify": "tsx src/verify.ts",
+    "call": "tsx src/call.ts",
+    "diagnose": "tsx src/diagnose.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@solana/web3.js": "^1.98.4",
+    "@terminal3/t3n-sdk": "^5.7.0",
+    "dotenv": "^17.4.2",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  },
+  "private": true
+}
