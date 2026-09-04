@@ -145,8 +145,9 @@ ledger and call it proof.
 This was the judging criterion the design was actually organised around.
 
 - **The interesting logic runs without the platform.** `stats.rs` and
-  `policy.rs` are pure and unit-tested; `cargo test` needs no node, no enclave
-  and no credits. Only `ledger.rs` touches the host, and it is `wasm32` only.
+  `policy.rs` are pure and unit-tested; `cargo test` runs 23 tests on the host
+  toolchain in under a second, with no node, no enclave and no credits. Only
+  `ledger.rs` touches the host, and it is `wasm32` only.
 - **Deploy is idempotent and self-healing.** `npm run deploy` tracks every
   contract id the tenant has registered and re-scopes both map ACLs to the
   union, so a version bump cannot orphan rows written by the previous build.
@@ -178,10 +179,10 @@ them would hide the most interesting thing the enclave did.
 
 ## 8. Bugs
 
-Seven write-ups with symptom, cause, fix and cost are on
+Eight write-ups with symptom, cause, fix and cost are on
 [the docs page](https://blindband.vercel.app/en/docs) and in
 [`web/src/lib/bugs.ts`](../../web/src/lib/bugs.ts). Five are platform issues,
-two are our own — kept in the report because pretending otherwise would make
+three are our own — kept in the report because pretending otherwise would make
 the other five less credible.
 
 ![The bug write-ups](../images/06-docs-en.png)
@@ -238,6 +239,17 @@ the worst failure mode a verification tool has.
 contract.** `readState()` caught the parse failure and returned `{}`, so the
 deploy believed nothing was registered. The deeper fix is that an unparseable
 state file should stop the deploy rather than be treated as empty state.
+
+**BB-08 — a default build target made `cargo test` impossible.**
+`could not execute process … z_blindband-….wasm` / `%1 is not a valid Win32
+application (os error 193)`. `.cargo/config.toml` set `[build] target =
+"wasm32-wasip2"` to shorten the component build; that default applies to
+`cargo test` too, so cargo compiled the test harnesses to wasm and then tried
+to run them natively. *Fix:* drop the default and name the target on the one
+command that needs it. Worth recording because the repository was claiming the
+gates were covered by a command that did not run — found by executing every
+command in our own documentation before publishing, which is the only reason it
+is not still true.
 
 ## 9. Status, honestly
 

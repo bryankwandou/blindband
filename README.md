@@ -113,6 +113,10 @@ The split between `policy.rs`/`stats.rs` and `ledger.rs` is deliberate: the
 interesting logic runs under `cargo test` without a node, an enclave, or test
 credits. That is what keeps this maintainable by whoever inherits it.
 
+```bash
+cd contract && cargo test   # 23 tests, host toolchain, under a second
+```
+
 ## Host capabilities
 
 ```json
@@ -126,7 +130,7 @@ there is no egress surface to review and nothing to allowlist.
 
 ## Bugs and platform notes
 
-Seven write-ups — five platform, two of our own — are on
+Eight write-ups — five platform, three of our own — are on
 [the docs page](https://blindband.vercel.app/en/docs), with symptom, cause, fix
 and what each one cost. The three that will cost the next person the most time:
 

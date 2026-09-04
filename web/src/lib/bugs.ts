@@ -94,4 +94,15 @@ export const BUGS: BugNote[] = [
     fix: "Write the file BOM-free. The deeper fix is that a state file which fails to parse should stop the deploy rather than being treated as an empty state.",
     cost: "Half an hour of doubting the platform for something local.",
   },
+  {
+    id: "BB-08",
+    kind: "ours",
+    title: "A default build target in .cargo/config.toml made cargo test impossible",
+    symptom:
+      "`cargo test` compiled everything, then died with `could not execute process … z_blindband-….wasm` / `%1 is not a valid Win32 application. (os error 193)`.",
+    cause:
+      "`.cargo/config.toml` set `[build] target = \"wasm32-wasip2\"` so the component build could be typed more briefly. That default applies to `cargo test` too: cargo built the test harnesses as wasm and then tried to execute them as native binaries.",
+    fix: "Delete the default target and name it on the one command that needs it — `cargo build --target wasm32-wasip2 --release`, which is what the deploy script already looked for. Plain `cargo test` now runs the 23 host tests.",
+    cost: "Small in minutes, large in consequence: the repository claimed the gates were covered by a command that did not run. Found by actually running every command in our own documentation before publishing.",
+  },
 ];

@@ -4,7 +4,7 @@
 //! Run on the host toolchain, no node and no credits required:
 //!
 //! ```text
-//! cargo test --target x86_64-pc-windows-gnu
+//! cargo test
 //! ```
 
 use z_blindband::model::*;
