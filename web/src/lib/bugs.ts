@@ -138,4 +138,15 @@ export const BUGS: BugNote[] = [
     fix: "None available from this tier. Rounds run under the tenant identity, and the agent reports which identity ran a round rather than implying otherwise. `npm run probe:agent` re-runs the check in one call, so whoever inherits this can tell in seconds whether their tier has lifted.",
     cost: "No lost time — but it is the single largest gap between what this is and what an agent on this platform is supposed to be, and it is not closable by writing better code.",
   },
+  {
+    id: "BB-12",
+    kind: "ours",
+    title: "The landing page was blank with JavaScript disabled",
+    symptom:
+      "A crawler, a reader with scripting off, or a screenshot taken before hydration got the header, the footer, and nothing in between. `curl` on the built page shows why: every section ships as `style=\"opacity:0;transform:translateY(14px)\"`.",
+    cause:
+      "The one entrance animation on the site starts each section at zero opacity and animates it in when it scrolls into view. That initial style is server-rendered, so the page's whole argument — the round, the gates, the verifier — depended on JavaScript running to become visible at all. Nothing in the browser ever showed it, because in a browser the animation always ran.",
+    fix: "The animated wrapper carries a `data-reveal` marker and the document head carries a `<noscript>` rule that forces every one of them back to full opacity. The same commit made the light palette a `prefers-color-scheme` media query as well as a JavaScript-set attribute, so a light-configured machine gets a light page before hydration rather than a dark flash or nothing at all.",
+    cost: "Found while building the screenshot script, not while using the site — which is the point. Half of the captures came back as an empty gradient, and the flaky tool turned out to be the honest witness.",
+  },
 ];

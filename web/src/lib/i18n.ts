@@ -43,7 +43,15 @@ interface Faq {
 
 export interface Dictionary {
   meta: { title: string; description: string };
-  nav: { round: string; verify: string; docs: string; source: string; skip: string };
+  nav: {
+    round: string;
+    verify: string;
+    docs: string;
+    source: string;
+    skip: string;
+    themeLight: string;
+    themeDark: string;
+  };
   hero: {
     eyebrow: string;
     title: string;
@@ -52,6 +60,13 @@ export interface Dictionary {
     primary: string;
     secondary: string;
     stats: { published: string; withheld: string; contributors: string; rows: string };
+    proof: {
+      label: string;
+      median: string;
+      withheld: string;
+      digest: string;
+      anchored: string;
+    };
   };
   problem: {
     kicker: string;
@@ -147,6 +162,8 @@ const en: Dictionary = {
     docs: "Docs",
     source: "Source",
     skip: "Skip to content",
+    themeLight: "Switch to the light theme",
+    themeDark: "Switch to the dark theme",
   },
   hero: {
     eyebrow: "Confidential benchmarking on Terminal 3",
@@ -161,6 +178,13 @@ const en: Dictionary = {
       withheld: "cells withheld",
       contributors: "contributing firms",
       rows: "sealed rows",
+    },
+    proof: {
+      label: "What the enclave returned",
+      median: "median",
+      withheld: "withheld",
+      digest: "round digest",
+      anchored: "Anchored on Solana devnet",
     },
   },
   problem: {
@@ -371,6 +395,8 @@ const id: Dictionary = {
     docs: "Dokumentasi",
     source: "Kode",
     skip: "Lewati ke konten",
+    themeLight: "Ganti ke tema terang",
+    themeDark: "Ganti ke tema gelap",
   },
   hero: {
     eyebrow: "Benchmarking rahasia di atas Terminal 3",
@@ -385,6 +411,13 @@ const id: Dictionary = {
       withheld: "sel ditahan",
       contributors: "perusahaan penyumbang",
       rows: "baris tersegel",
+    },
+    proof: {
+      label: "Yang dikembalikan enclave",
+      median: "median",
+      withheld: "ditahan",
+      digest: "sidik jari ronde",
+      anchored: "Ditambatkan di Solana devnet",
     },
   },
   problem: {
@@ -595,6 +628,8 @@ const zh: Dictionary = {
     docs: "文档",
     source: "源码",
     skip: "跳到正文",
+    themeLight: "切换到浅色主题",
+    themeDark: "切换到深色主题",
   },
   hero: {
     eyebrow: "构建于 Terminal 3 的保密基准测算",
@@ -609,6 +644,13 @@ const zh: Dictionary = {
       withheld: "个被扣下的单元",
       contributors: "家参与企业",
       rows: "行密封数据",
+    },
+    proof: {
+      label: "飞地返回的结果",
+      median: "中位数",
+      withheld: "已扣下",
+      digest: "本轮指纹",
+      anchored: "已锚定于 Solana devnet",
     },
   },
   problem: {

@@ -301,7 +301,7 @@ there is no egress surface to review and nothing to allowlist.
 
 ## Bugs and platform notes
 
-Eleven write-ups — six platform, five of our own — are on
+Twelve write-ups — six platform, six of our own — are on
 [the docs page](https://blindband.vercel.app/en/docs), with symptom, cause, fix
 and what each one cost. The three that will cost the next person the most time:
 

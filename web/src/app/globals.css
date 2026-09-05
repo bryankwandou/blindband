@@ -6,22 +6,120 @@
  * things a reader should act on. Green and rust are reserved — strictly — for
  * "this was published" and "this was withheld". Nothing decorative uses them,
  * because a reader who learns that rust means withheld should never be wrong.
+ *
+ * Every token below names a ROLE, not a colour. `ink` is the page ground and
+ * `ivory` is the primary text, whichever theme is on — so in light mode `ink`
+ * is off-white and `ivory` is near-black. Reading the names as colours will
+ * mislead you; reading them as roles will not, and it is why the theme swap
+ * touches one file instead of forty.
+ *
+ * Two tokens deliberately do not move between themes. `fill` is the amber a
+ * button is painted with and `on-fill` is the text that sits on it: that pair
+ * has to stay a fixed, tested contrast, and letting it follow the theme would
+ * mean re-checking it twice instead of once. `signal` is the amber used for
+ * text and strokes, and it *does* move — the dark-mode amber is 2.1:1 on white
+ * and would fail every reading of the accessibility rules in light mode.
  */
+
+:root {
+  --bb-ink: #0a0b0d;
+  --bb-ink-raised: #101216;
+  --bb-ink-panel: #14171c;
+  --bb-line: #23272e;
+  --bb-line-bright: #333943;
+
+  --bb-ivory: #f2f0eb;
+  --bb-quiet: #9aa0a8;
+  --bb-faint: #666d76;
+
+  --bb-signal: #e8b14c;
+  --bb-signal-dim: #7d5f28;
+  --bb-published: #6fbf9b;
+  --bb-withheld: #c4634f;
+
+  /* The hero wash and the paper grain both have to be re-tuned per theme:
+   * the same alpha that reads as a glow on near-black reads as a smudge on
+   * off-white. */
+  --bb-wash: radial-gradient(60rem 32rem at 18% -8%, rgba(232, 177, 76, 0.13), transparent 62%),
+    radial-gradient(48rem 28rem at 88% 6%, rgba(111, 191, 155, 0.08), transparent 60%);
+  --bb-grain-opacity: 0.22;
+  --bb-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bb-ink: #fbfaf8;
+  --bb-ink-raised: #ffffff;
+  --bb-ink-panel: #f4f2ee;
+  --bb-line: #e5e1d9;
+  --bb-line-bright: #b9b2a4;
+
+  --bb-ivory: #16181c;
+  --bb-quiet: #4c535b;
+  --bb-faint: #6a717a;
+
+  --bb-signal: #8f6210;
+  --bb-signal-dim: #ecdcb8;
+  --bb-published: #1c7a56;
+  --bb-withheld: #a53a26;
+
+  --bb-wash: radial-gradient(60rem 32rem at 18% -2%, rgba(232, 177, 76, 0.2), transparent 62%),
+    radial-gradient(48rem 28rem at 88% 10%, rgba(28, 122, 86, 0.08), transparent 60%);
+  --bb-grain-opacity: 0.06;
+  --bb-scheme: light;
+}
+
+/* The same palette again, for the reader who has never touched the switch.
+ * The attribute above is written by JavaScript; this block is what makes a
+ * light-configured machine get a light page with scripting off, before
+ * hydration, or in a crawler. `:not([data-theme="dark"])` keeps an explicit
+ * choice of dark winning over the operating system's preference.
+ *
+ * It is duplicated rather than shared because a media query cannot be added
+ * to a selector list, and every indirection that avoids the repetition costs
+ * more to read than the repetition does. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bb-ink: #fbfaf8;
+    --bb-ink-raised: #ffffff;
+    --bb-ink-panel: #f4f2ee;
+    --bb-line: #e5e1d9;
+    --bb-line-bright: #b9b2a4;
+
+    --bb-ivory: #16181c;
+    --bb-quiet: #4c535b;
+    --bb-faint: #6a717a;
+
+    --bb-signal: #8f6210;
+    --bb-signal-dim: #ecdcb8;
+    --bb-published: #1c7a56;
+    --bb-withheld: #a53a26;
+
+    --bb-wash: radial-gradient(60rem 32rem at 18% -2%, rgba(232, 177, 76, 0.2), transparent 62%),
+      radial-gradient(48rem 28rem at 88% 10%, rgba(28, 122, 86, 0.08), transparent 60%);
+    --bb-grain-opacity: 0.06;
+    --bb-scheme: light;
+  }
+}
+
 @theme {
-  --color-ink: #0a0b0d;
-  --color-ink-raised: #101216;
-  --color-ink-panel: #14171c;
-  --color-line: #23272e;
-  --color-line-bright: #333943;
+  --color-ink: var(--bb-ink);
+  --color-ink-raised: var(--bb-ink-raised);
+  --color-ink-panel: var(--bb-ink-panel);
+  --color-line: var(--bb-line);
+  --color-line-bright: var(--bb-line-bright);
 
-  --color-ivory: #f2f0eb;
-  --color-quiet: #9aa0a8;
-  --color-faint: #666d76;
+  --color-ivory: var(--bb-ivory);
+  --color-quiet: var(--bb-quiet);
+  --color-faint: var(--bb-faint);
 
-  --color-signal: #e8b14c;
-  --color-signal-dim: #7d5f28;
-  --color-published: #6fbf9b;
-  --color-withheld: #c4634f;
+  --color-signal: var(--bb-signal);
+  --color-signal-dim: var(--bb-signal-dim);
+  --color-published: var(--bb-published);
+  --color-withheld: var(--bb-withheld);
+
+  /* Fixed in both themes — see the note at the top. */
+  --color-fill: #e8b14c;
+  --color-on-fill: #0a0b0d;
 
   --font-sans: "Inter var", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Menlo, monospace;
@@ -41,7 +139,7 @@
 
 html {
   scroll-behavior: smooth;
-  color-scheme: dark;
+  color-scheme: var(--bb-scheme);
 }
 
 body {
@@ -65,8 +163,8 @@ body {
 }
 
 ::selection {
-  background: var(--color-signal);
-  color: var(--color-ink);
+  background: var(--color-fill);
+  color: var(--color-on-fill);
 }
 
 :focus-visible {
@@ -75,16 +173,17 @@ body {
   border-radius: 2px;
 }
 
-/* A hairline that fades at both ends — used to separate sections without
- * drawing a hard box around everything. */
-.rule-fade {
-  background-image: linear-gradient(
-    90deg,
-    transparent,
-    var(--color-line-bright) 18%,
-    var(--color-line-bright) 82%,
-    transparent
-  );
+/* Alternating section grounds. The page has nine sections and one hue, so the
+ * rhythm has to come from the surface rather than from colour: a band sits on
+ * the raised ground, its neighbours on the page ground, and the eye gets a
+ * beat between them without anything being tinted. */
+.band {
+  background-color: var(--color-ink-raised);
+  border-block: 1px solid var(--color-line);
+}
+
+.hero-wash {
+  background-image: var(--bb-wash);
 }
 
 .grain::before {
@@ -92,6 +191,6 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.22;
+  opacity: var(--bb-grain-opacity);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
 }

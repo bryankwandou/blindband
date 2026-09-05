@@ -111,7 +111,7 @@ function DigestCard({
             type="button"
             onClick={hashIt}
             disabled={state === "working"}
-            className="rounded-md bg-signal px-4 py-2.5 text-[13.5px] font-medium text-ink transition-opacity hover:opacity-90 disabled:opacity-60"
+            className="rounded-md bg-fill px-4 py-2.5 text-[13.5px] font-medium text-on-fill transition-opacity hover:opacity-90 disabled:opacity-60"
           >
             {state === "working" ? t.verify.recomputing : t.verify.recompute}
           </button>

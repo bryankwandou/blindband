@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { BandChart } from "@/components/BandChart";
 import { Reveal } from "@/components/Reveal";
+import { RoundProof } from "@/components/RoundProof";
 import { TerminalReplay } from "@/components/TerminalReplay";
 import { Verifier } from "@/components/Verifier";
 import { getDictionary, isLocale, type Locale } from "@/lib/i18n";
@@ -29,17 +30,23 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   return (
     <>
       {/* ── hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-x-clip">
+        {/* The wash runs up behind the header, which is sticky and transparent
+            until the page moves. Clipped at the section's own top edge it drew
+            a visible seam under the nav in the light theme — the dark theme hid
+            the same bug because the gradient was too faint to see. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 animate-drift opacity-70"
-          style={{
-            background:
-              "radial-gradient(60rem 32rem at 18% -8%, rgba(232,177,76,0.13), transparent 62%), radial-gradient(48rem 28rem at 88% 6%, rgba(111,191,155,0.08), transparent 60%)",
-          }}
+          className="hero-wash pointer-events-none absolute inset-x-0 -top-24 bottom-0 animate-drift opacity-70"
         />
 
         <div className="relative mx-auto max-w-6xl px-5 pb-16 pt-20 sm:px-8 sm:pb-24 sm:pt-28">
+          {/* Claim on the left, the enclave's own output on the right. Below
+              the lg breakpoint the card follows the copy rather than being
+              dropped — on a phone it is the first thing under the buttons,
+              which is where the evidence is most useful. */}
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_21rem] lg:items-start lg:gap-14">
+          <div>
           <Reveal>
             <p className="font-mono text-[11.5px] uppercase tracking-[0.18em] text-signal">
               {t.hero.eyebrow}
@@ -47,7 +54,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           </Reveal>
 
           <Reveal delay={0.06}>
-            <h1 className="mt-5 max-w-4xl text-[2.35rem] font-semibold leading-[1.06] tracking-[-0.028em] text-ivory sm:text-[3.6rem]">
+            <h1 className="mt-5 max-w-3xl text-[2.35rem] font-semibold leading-[1.06] tracking-[-0.028em] text-ivory sm:text-[3.1rem] lg:text-[3.35rem]">
               {t.hero.title}{" "}
               <span className="relative whitespace-nowrap text-signal">
                 {t.hero.titleAccent}
@@ -69,7 +76,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <Link
                 href={`/${locale}/round`}
-                className="rounded-md bg-signal px-5 py-3 text-[14px] font-medium text-ink transition-opacity hover:opacity-90"
+                className="rounded-md bg-fill px-5 py-3 text-[14px] font-medium text-on-fill transition-opacity hover:opacity-90"
               >
                 {t.hero.primary}
               </Link>
@@ -82,8 +89,22 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             </div>
           </Reveal>
 
+          </div>
+
+          <Reveal delay={0.2}>
+            <RoundProof
+              bands={round.bands}
+              suppressed={round.suppressed}
+              anchor={anchor}
+              roundId={round.round_id}
+              t={t}
+              locale={INTL[locale]}
+            />
+          </Reveal>
+          </div>
+
           <Reveal delay={0.24}>
-            <dl className="mt-16 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-line pt-8 sm:grid-cols-4">
+            <dl className="mt-14 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-line pt-8 sm:grid-cols-4">
               {stats.map((s) => (
                 <div key={s.label}>
                   <dt className="sr-only">{s.label}</dt>
@@ -127,9 +148,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         </div>
       </section>
 
-      <div className="rule-fade mx-auto h-px max-w-6xl" />
-
       {/* ── how it runs ──────────────────────────────────────────────────── */}
+      <div className="band">
       <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
         <Reveal>
           <p className="font-mono text-[11.5px] uppercase tracking-[0.18em] text-faint">
@@ -162,8 +182,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           <TerminalReplay className="mt-12" />
         </Reveal>
       </section>
-
-      <div className="rule-fade mx-auto h-px max-w-6xl" />
+      </div>
 
       {/* ── gates ────────────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
@@ -203,9 +222,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         </Reveal>
       </section>
 
-      <div className="rule-fade mx-auto h-px max-w-6xl" />
-
       {/* ── the round ────────────────────────────────────────────────────── */}
+      <div className="band">
       <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-2xl">
@@ -250,8 +268,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           </p>
         </Reveal>
       </section>
-
-      <div className="rule-fade mx-auto h-px max-w-6xl" />
+      </div>
 
       {/* ── verification ─────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
@@ -292,9 +309,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         </Reveal>
       </section>
 
-      <div className="rule-fade mx-auto h-px max-w-6xl" />
-
       {/* ── faq ──────────────────────────────────────────────────────────── */}
+      <div className="band">
       <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
         <Reveal>
           <p className="font-mono text-[11.5px] uppercase tracking-[0.18em] text-faint">
@@ -327,8 +343,10 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         </div>
       </section>
 
+      </div>
+
       {/* ── cta ──────────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-5 pb-24 sm:px-8">
+      <section className="mx-auto max-w-6xl px-5 pb-24 pt-20 sm:px-8 sm:pt-24">
         <Reveal>
           <div className="grain relative overflow-hidden rounded-2xl border border-line bg-ink-raised px-7 py-14 text-center sm:px-12">
             <h2 className="relative text-[1.6rem] font-semibold tracking-[-0.02em] text-ivory sm:text-[2rem]">
@@ -342,7 +360,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                 href={REPO}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="rounded-md bg-signal px-5 py-3 text-[14px] font-medium text-ink transition-opacity hover:opacity-90"
+                className="rounded-md bg-fill px-5 py-3 text-[14px] font-medium text-on-fill transition-opacity hover:opacity-90"
               >
                 {t.cta.primary}
               </a>
