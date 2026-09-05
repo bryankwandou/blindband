@@ -1,0 +1,821 @@
+[
+  {
+    "commitment": "a7498c7bc809d08da5da9046459bbf9482691de7243d793d38793c6b101696c2",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "848c1c00dc112b57bc89a089c65600b160bad17eb7859db3a9f6b6a8ff084441",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "b4ef6894f228cf80ff5d2a8dc202481b62b6c5354537a43339f64fde517a52a6",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "511911d1a55a2c4f56627b8bfd83bbe482e548a5ee55e03d7974d320fda0ed3b",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "031774980c27fccf1a430a7ed3242ea854566546a5bcd3624cb6d5632637553e",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "1593476d225bbf294dd337200882568f88f3a1947f092f1ac6828483c792c22a",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "e6efaea26efc1d86538d3eeb1e6440bc806c373cda6667711813300db29448c5",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "ed26f24e3ec8aacf66e76819afbba6ecee77471c29c6fd6ca0d8b3a584e754c0",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "3efed5777d9ce25e467be67ea92071f7253c9f4515b0699261699ab276ce35f6",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "a5a134fc77bd5b6544b144cc651bef033e099d1d0652469492054fa8e1b0731c",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "329654c2fead9cee2ccde3ac554891e077ddf1a3cefc56f87d93a222cec50c25",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "8095799faf8f5ddca2654707678efa053afaf5488ecdf8d1f5f5879308a2bef0",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "759abc1c9ad21ec25d3e57fb399b68a1975fac8728207c269f3bb91a32c9ddeb",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "632af6b2cd5c9c82684731f7cbec1b105af0f7ed341a967577092ce41872283a",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "65d960c60aacf54c1b1526ade013d5a7239018e1adda2a2a4b3c78527f473352",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "d7bd363ab83e5ede824969334bba6ae5dd0532d09261c4df67599c8c8eb74f2b",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "0d941c80a9a0124d399c2e1efb67fa5567a0950658ed284595530e6415f0c529",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "cda18a346236c4bee987596cf4496ae4897639c2fb9f0f5591f90a799b4f735e",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "2d658d9a8ac2fe7e8dfd387dbe736ea0183b8152ad2b4e48c866d2d5250a09d9",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "9791648a56bbeb60d7f27d24c729df7c6a453fe66c0a23071c3ae2f9fdb754e3",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "ccb9deb24f6e5656529be07906b5939ba98e2c85a9e50ac1fda8e1b3582e0df3",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "b2767271a5e159086591de02f6492416276c8436aeee4a0ede600928343d07b4",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "9eca18a5655558909d1941702acdf2e78a12ea5a6a886ba329e1b27d2f2b05ac",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "c6632eadfab03e9b31ff30dc5dc7a5e8250264c65108625e0f7c7b9998bd1ae8",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "3d7b8363fc79ed3af7cae030cbac324e79cf5ab6d8a8c0ec3d0b28f4586db614",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "e69222ae6990760c91c659df7e372e90fcd1f8ffc9e96385dd18ad90780fc667",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "4b05ea3493d82a730c759fedfafefd9808110a44ac228d784a702e92bbebc70a",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "0d5079c6cf90888b1543e9aa9ecfa6a6ae79e18ffbb0b33a355d84d83a9cb380",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "5233735ccf939968ba1790760a1d8541e02d7d56e92b8f6bdada6aeca160e3db",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "f169defd209bb83447e25c9be05bdb08f4abfeb3c5eee716094492c746ce87df",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "4844fcfd93f89334125cfdb9345db0d19b47b3680d6fa2ba94e7eb934ab15393",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "1c4a133081710b064bc8a6ca1d13dbc496803771c88b0695d3f09bb7803d2b65",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "72d4b242a2c5f8023f60f2f87c3e9a15599446065cc24a1ecea13304d0f11e4c",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "d927314f806e8e1c36dbb8639f1cf6a5b51995f7bf952d4d937fc47ad35ed369",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "4d2da397a958529565d8166aedd8c5c8481ad63999144859fed3442e2c4600cf",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "995e7082378ab713896fa656aa4d4df7db1c8e0c1cfe71eb2ae3a5c88ed1a6f5",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "b7780de57f0e58394fd9aa0af2830a2b191731afd60e0747d00b9af51c640a93",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "14b2c28278b3008f2f92ebae40a094b55b98039fa62e1997984d452392966c17",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "a6533f7b005d3f8bb8d941de1a7f227a09207a2c5e74a1629a2f8041d17683f8",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "f7f3ad665c215bed2cb89ef1089f50278a616ec156e81ed7b275399aa63a1637",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "38ff15222bffd9ecc47c7226cd73d958f6577f95e3ef9316eae545b3dbfa5d89",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "e284ae6ee5f53bcf70647379853f6b5caf3d433d5292ea33ae7f684d13f5924b",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "f7609d5c495db33ac7ae58c656fd08587ccc12991a5e03a70b720fa904382bd2",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "761e47e641f69d345cdf778e6edc9bee851460614639414be0e61be00b52e676",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "aecfd1a3928918f5380595dd5a2ed4dcc82eec9538e483c1f22d402da464cc65",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "0885e162308b939fd6634dde5243b3df92abf5fe575b19f78bfe1961ca49d72d",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "95e4e3881ba0fdf94adc73f9346bc3fbc78d61b985be7a8117ac837cfb0ab57d",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "0fd15d6296a3e7ae2728d5e9ede3a7cd67b6cb84006813b7a06bf8ac24a87d1a",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "941c5a2ca1e8ef4a3cf543c2b6f4cb0feb12ec15de958178abd575ba535a8787",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "f8e58518989b38f8e50ec10f0d39e200e40dd9cc1273adfcd7d147c2504f5d33",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "a231a9004a44485e41479b0fa8b4d9893b8a4b6739ad15994f33d89279a427e7",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "1f53730d4ff050bb3ace0f8f5043bd76160f26545769c95913e5397ed7c45085",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "f46f93ed83957dddd382220cbc020bd5bfa6341dcb47834baefe4d8c29183b4b",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "fcfd14ee3236ba8f5b6d43d8f9f7c9f76cb3230efd884e41394e6e1fe1397c55",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "1467a7da05edfb4947da764e2abd3b7a14b9945fd3568659ed768dae914762cf",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "431f9e9202495cac44927d3b015a420a3769c374695f4e30348f22e4b6acb6c3",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "02ecd412f3b32a217742ac602e94b6e77899d9eafbf5677e388e29c97f1d5415",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "be1d462d2909facf802c9e461592c283ac85f210bdcfcac69ccba8facd296fe9",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "86900cc9f4e02f1a76849ab0378261820f600334b32a917a82f69c7550f0f2b2",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "359ab35eba113f702258825ca4d95f971a4b5b38106ce7950daa9ecbc2c0a033",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "21eb289702bbbf71fc6bb4295a702711896d16f613d362d9b408893ce7b596a5",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "e286ef2aea5565bd66d161cce0b43da5bfe0906ecc66d9e7c1ed501090467782",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "6863af60ab50f448cb9c482c8cd8061459ee69938731f1d3e06a24a0c507da8f",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "cbb0e8b8788183d9d0ec76cbe8632c314664a0ce4c0a84daeeee10623df9d2d9",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "c896aa04429a80e1a3a3682065a67454cd26cf9840d2ae7bb1702f31c817c21c",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "3a5a9d86981a40cb6c16f3c180b05396f7b03f04ce4072d7f50763bbd51fa8ff",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "c4a9c89a982774f538569d04b34cbc3df99140c39e7cf76555d6276489e5f4ea",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "64d2a5d56b86debe337b753e25b9724e248fa459e921e611411dc925462f279c",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "8f132f7e25b9b1ccd4032f0397151a90d520ca39385e1c1b06fae72bd6242508",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "d8cb4027807c5bc94bd8f18451f7aae2bf6315694f88f542051bcf0e4f3c5db0",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "1f71889e005216caede22eab61a0a1cbcdb66a77d26706f91bd731d957ac4bf4",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "19e19b640a32f9c2d64042bbd4cafba491bde7141f3729c1eba03572eb8087b6",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "cb39425cfee05bf4403ead7fa374875da5a01b09595beb910cc519f11b75d988",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "5e427a22d900dea820f88bbffb4598adcb45f92d5a8b8c390d8eb6e9195de586",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "b631970995505c52b562d232baca1788a8b23f15d5f33a2b9aba77af91768dbd",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l6|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "62916dabcc89497232b1352c75a36ab6bb7f1098a22dd814e3a1f595e3984292",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "8128d4c7dfc549e50dd96198e10de2ee67eaf5fafc2721461963ba0ae960e0bd",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "c421be5b59bb24c417fcf77818993a3c6cfba8e08cc2c34b8f4def1365cf9cfe",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "a19e739520eaca5835b6b1a99d20ef0e9464ec4738d88486bc27046055118aff",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "60a83d5ec3e4c6cad066858adc05b16b69d1f27818e57cc80c65f915f9d9d7e9",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "6a50ae5a6dcaa8c6a735c3f0ab6acbe72a73aa0c1fbdffe7493c62c326ea3487",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "ea9c05192273a251f19709e77b3a42c9d7d6f18917eaa77a4219687e9f640581",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "396c57c1f2f00ef95f4a7799185bb3fde69520ab0749bce411ce6faa79dddd87",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "abfeca37032bba733c0ae941030898f5189be33a5e7f15dbcddafb291bec9e1b",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "55bfa678e33b950b1c47fb11249ac36e4e5f7a99d990e7edf25fbd57bb4534e7",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "c6d0aef2d15a64b2b4edf5527b7e3d0f9eacb96cd4b5bd74c729ad31e04122f2",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "135287461c839ee20484c44944fe694af29ad150b8e9f0906d8053819f19652a",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "7c11b3433fc5565e234470fb04aaf983994e87bf4d7a085ed1d70a0ad451b152",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "a49727094b528a0e7fdb2b7cbe67583fe310c3795c665b6959333a918c36759f",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "665dab5fc486ce1d07971b52254265a0b8a5b7906ccb3ed5e7876951262d9cea",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "20622c4d587305cea1197683cc4589659e0034725f3cdc3afd8995530bb37e84",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "73a391cb0c929ea6ace82b67a21652de786d0efd214795c77314eda42435643d",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "7c6e411cb713f764afd4cb190b257ba90103b8e2f344fb49fb1a043962fd33cc",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "a8d360dfecd426a80cb56debcde1d7928ec4e1fd1050f7498f6c800bc6643235",
+    "round_id": "2026-q1",
+    "cell": "product designer|l4|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "bec1d67202920940461b040607a0638324a6bfc80e708b24a12700ad5fc58163",
+    "round_id": "2026-q1",
+    "cell": "data scientist|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "3b1ccb39abcaa8fe06f801e4183493d711b4dc613243bb0cc79e265cca732104",
+    "round_id": "2026-q1",
+    "cell": "data scientist|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "f2a6b61730b39cb426ad809d40e4ec2851a8552b93d8500609cc8252462317f0",
+    "round_id": "2026-q1",
+    "cell": "data scientist|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "bd8b482bf31e1e8d3dda2dbc47c7b3ea3ddab802cb7598f5c9e3a2a17464819c",
+    "round_id": "2026-q1",
+    "cell": "data scientist|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "2f7672e9277992243baeefbf2511596a2f0b13f3bd1c02c30611df176b714a9a",
+    "round_id": "2026-q1",
+    "cell": "data scientist|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "54f686003f811b1dbc548276863943767b53bec9b0aa58690a95a14945513da8",
+    "round_id": "2026-q1",
+    "cell": "data scientist|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "fc816f165aadeb878f80f0463d2eb2e92087027d83d39ea3d41f88964f166772",
+    "round_id": "2026-q1",
+    "cell": "data scientist|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "46a0b50161912b527026d170e227628dc797063e1e5dc4f20ee50c3c2c9f309d",
+    "round_id": "2026-q1",
+    "cell": "data scientist|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "bb372f34ad15e12073f3f3bf18809731885c9b0de016bbb609c511d4a276ca98",
+    "round_id": "2026-q1",
+    "cell": "data scientist|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "5ef0bd7ccde3f4e2c12d4bd6031f675de9cd395e60c3b1a6e3c681a19854049f",
+    "round_id": "2026-q1",
+    "cell": "data scientist|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "c35bc2a28ef8877f98d251ba838408b68f2cdf7e7c921405ea01e8653c3a6b10",
+    "round_id": "2026-q1",
+    "cell": "data scientist|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "ce56ba689a42540a8feda48e6a2ad27639a629a9776e44f5b77b17c8eebefcc0",
+    "round_id": "2026-q1",
+    "cell": "data scientist|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "9db559fe45591182071acdc1771dac334da473c1e47cd9cc2810d69b40e38fb2",
+    "round_id": "2026-q1",
+    "cell": "data scientist|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "81eab8109629799f30956290cc47842e580df0df5535f0b0b248c9600135defd",
+    "round_id": "2026-q1",
+    "cell": "engineering manager|m2|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "4b9f9b0a4d4ea46aae9ab6727eb650c3dae7d705a683f6db48d861e6ffd4ada6",
+    "round_id": "2026-q1",
+    "cell": "engineering manager|m2|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "4c60e63d6647ed8e9f8e9885e1496370bf3b903b232de2a9924863e4be58ac67",
+    "round_id": "2026-q1",
+    "cell": "engineering manager|m2|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "8bd2e6cf524dc44b9d3680a7d77fcb8ac2ba7e52a225384874d47909536bc6b3",
+    "round_id": "2026-q1",
+    "cell": "engineering manager|m2|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "6b79aafd19b8ea2a6035f9c6331a2153516394d7b9e69b8426abaff46a3fa73e",
+    "round_id": "2026-q1",
+    "cell": "engineering manager|m2|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "dd8ae312e4e8f9fcf10d90d8fd53d484006ec731b8b114c169a0edd8c00dcad2",
+    "round_id": "2026-q1",
+    "cell": "engineering manager|m2|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "0538417f91122cb8177210aaf3e2fd542422101b745fe0a21b4ca20c030bd113",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "2c6ae44c0b7997853f4a9d7a9f35b90c060ede64b5a142c2a2d3ed7205cf6b89",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "b767b15775583967afe481e6f5b33c2d226094807bc1501555c5e719381fb2f7",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  },
+  {
+    "commitment": "90a286699ab0534ddaeb7279aac325e493bc8cacc39cb65f1f62b2333b722e81",
+    "round_id": "2026-q1",
+    "cell": "backend engineer|l5|sea",
+    "submitted_at": 1788450607,
+    "ruleset": "blindband-safe-harbour/v1"
+  }
+]

@@ -7,7 +7,9 @@ dist/
 # data file is not reproducible by anyone but us.
 data/round.json
 data/anchor.json
-data/receipts.json
+# `receipts.json` is NOT ignored either: the commitments it holds are what
+# lets anyone rebuild the published round exactly and check the digest that is
+# on chain. See `cargo run --example replay -- --replay`.
 data/verification.json
 
 # Belongs to whoever deployed it — tenant DID, contract ids, map names. A

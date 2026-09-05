@@ -123,7 +123,83 @@ Or open https://blindband.vercel.app/en/verify and press the button: the digest
 is recomputed in your browser with the Web Crypto API and checked against the
 memo on Solana. Nothing of ours is in that loop.
 
-## Running a round on your own tenant
+## Running the agent on your own data
+
+The gates are the product. You can put your own rows through them, offline, with
+no account, no key, no credits and no network — because the aggregation is plain
+Rust in this repository and the enclave is what seals the inputs, not what
+computes the answer.
+
+```bash
+cd contract
+cargo run --example replay -- examples/payroll-sample.csv --round-id demo
+```
+
+```text
+input        : examples/payroll-sample.csv — 30 rows
+round        : demo
+evaluated at : 1788589296  (rows effective after 1780726896 are too recent to use)
+commitments  : minted locally — this run is yours, not a replay
+
+ingested 30 rows from 5 contributors — 5 too recent, 0 malformed
+1 cells published, 2 withheld
+
+PUBLISHED
+  cell                     cur          p10    median       p90  firms  top firm
+  backend engineer l4      EUR      6916.00   7415.00   8009.00      5    25.00%
+
+WITHHELD
+  data scientist l5        contributor_concentration_exceeded     5 firms / 10 rows
+  engineering manager m2   below_contributor_floor                3 firms / 3 rows
+
+digest       : 6f327f46c68f7fb9a004b45387cbfc54f38b193552ec0cc8c0aa445bfb9f6e66
+```
+
+Every gate fires in that one run, on purpose. The published cell sits at exactly
+25.00% — one row either way and it is withheld. The five product designer rows
+never reach the maths at all: their pay is effective in 2030, so gate 1 drops
+them as too recent to be lawful to pool.
+
+Swap in your own extract and rerun. The header row is all the schema there is:
+
+```text
+contributor,role,level,region,currency,base_minor,effective_at
+acme,Backend Engineer,L4,EU,EUR,720000,1755000000
+```
+
+`base_minor` is minor units — cents — so the maths stays integral. Move a salary,
+delete a contributor, change a date, and watch which cells stop being publishable.
+That is the whole argument for running the aggregation somewhere neither member
+controls, and it is more convincing from the other side of the keyboard.
+
+### Replaying the round that is on chain
+
+The same command can rebuild the *published* round from its own inputs:
+
+```bash
+cargo run --example replay -- --replay
+```
+
+```text
+digest       : e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef
+expected     : e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef
+
+[  ok  ] this machine derived the digest that is anchored on Solana devnet.
+         Same inputs, same code, same answer — no enclave, no key, no network.
+```
+
+That closes the loop the other three checks leave open. `npm run judge` shows
+the published numbers are internally consistent and that the chain agrees with
+them; this shows a laptop with no credentials can take the 117 raw submissions
+and *derive* the digest that was written to Solana on 4 September. The enclave
+kept the inputs sealed. It did not get a say in the answer.
+
+## Running a round inside the enclave, on your own tenant
+
+The one thing that genuinely needs credentials is the enclave itself, because it
+spends credits — yours, not ours. A sandbox tenant is free to claim from
+Terminal 3’s community page, and the two free commands come first so that nobody
+spends anything to discover their key does not work.
 
 ```bash
 # 0. build the component
@@ -132,9 +208,11 @@ cd contract && cargo build --target wasm32-wasip2 --release
 cd ../agent && npm install
 cp .env.example .env      # T3N_API_KEY, SOLANA_SEED_HEX
 
-npm run deploy -- --dry-run           # free: names your tenant, shows the balance
+npm run preflight                     # free: does this key reach the platform at all
+npm run deploy -- --dry-run           # free: names your tenant, shows the balance,
+                                      #       and says what the real deploy would do
 npm run deploy                        # register + scope the sealed maps
-npm run submit -- data/records.json   # 117 rows, one execution
+npm run submit -- data/records.json   # 117 rows, one execution — or your own file
 npm run round -- 2026-q1              # aggregate inside the enclave
 npm run anchor                        # write the digest to Solana devnet
 npm run verify                        # check all of the above
@@ -145,6 +223,10 @@ Each step refuses to proceed if the previous one left something inconsistent.
 does not match. `verify` runs three tiers of check — offline, on-chain, and
 against the enclave — and the last of its three receipt probes is a deliberate
 forgery, so a verifier that only ever says yes gets caught.
+
+Run it against `data/records.json` and the enclave should hand back the same
+digest the replay above derives on your laptop. Run it against your own extract
+and you get a round of your own, anchored under your own signature.
 
 ### The site
 
@@ -170,6 +252,7 @@ contract/src/model.rs    wire types + ruleset constants
 contract/src/stats.rs    percentile maths — pure, unit-tested
 contract/src/policy.rs   the four gates + aggregation — pure, unit-tested
 contract/src/ledger.rs   the only module that touches the host (wasm32 only)
+contract/examples/replay.rs  run the gates on your own CSV, or replay the round
 
 agent/src/deploy.ts      register the component, re-scope the maps
 agent/src/submit.ts      batch ingestion
@@ -179,6 +262,7 @@ agent/src/verify.ts      offline + on-chain + enclave checks
 agent/src/judge.ts       the same round, checked by a stranger with no credentials
 agent/src/lib/recompute.ts  a second implementation of the ruleset, for check 1
 agent/data/records.json  the 117 submissions the published round was built from
+agent/data/receipts.json the commitments that make an exact replay possible
 agent/state.json         the only state outside git, and not in it
 
 web/                     the public site, 3 locales, statically generated
