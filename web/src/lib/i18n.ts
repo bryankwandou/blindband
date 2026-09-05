@@ -330,6 +330,10 @@ const en: Dictionary = {
         q: "Is this ready for a real consortium?",
         a: "The pipeline is real and the gates work, but it runs on a sandbox tenant with test credits, and rounds currently execute under the tenant identity rather than a delegated agent key. Those are the two things to close before anyone's actual payroll goes near it.",
       },
+      {
+        q: "Could two rounds, compared, reveal what one round withheld?",
+        a: "Yes, in principle, and nothing in this version stops it. The four gates are evaluated inside a single round. If a firm joins or leaves between rounds, the change in a cell is computed from that firm's rows alone, and a large enough change can be attributed to it — the standard differencing attack on repeated aggregates. A consortium running this quarterly would meet it in the second quarter. The fix is a fifth gate that compares a cell with the same cell in the previous round and withholds when the contributor set has moved too far; the contract already stores the round history it would need. It is named here rather than left to be found, because a gate that has not been written is not a gate.",
+      },
     ],
   },
   cta: {
@@ -563,6 +567,10 @@ const id: Dictionary = {
         q: "Apakah ini siap untuk konsorsium sungguhan?",
         a: "Pipeline-nya nyata dan gerbangnya bekerja, tetapi ia berjalan di tenant sandbox dengan kredit uji, dan ronde saat ini dieksekusi memakai identitas tenant alih-alih kunci agen yang didelegasikan. Dua hal itulah yang harus ditutup sebelum payroll siapa pun benar-benar mendekat.",
       },
+      {
+        q: "Bisakah dua ronde, bila dibandingkan, membuka apa yang ditahan salah satunya?",
+        a: "Bisa, pada prinsipnya, dan versi ini belum mencegahnya. Keempat gerbang dinilai di dalam satu ronde saja. Kalau ada perusahaan yang masuk atau keluar di antara dua ronde, perubahan pada sebuah sel berasal dari baris perusahaan itu saja, dan perubahan yang cukup besar bisa diatributkan kepadanya — serangan differencing yang klasik pada agregat berulang. Konsorsium yang menjalankan ini tiap kuartal akan menemuinya di kuartal kedua. Perbaikannya adalah gerbang kelima yang membandingkan sebuah sel dengan sel yang sama di ronde sebelumnya, lalu menahannya bila susunan penyumbang bergeser terlalu jauh; riwayat ronde yang dibutuhkannya sudah disimpan kontrak. Ini disebutkan di sini, bukan dibiarkan ditemukan orang lain, karena gerbang yang belum ditulis bukanlah gerbang.",
+      },
     ],
   },
   cta: {
@@ -788,6 +796,10 @@ const zh: Dictionary = {
       {
         q: "它可以用于真实联盟了吗？",
         a: "流水线是真的，门槛也确实生效，但它跑在沙箱租户上、使用测试额度，且当前轮次以租户身份而非受委派的代理密钥执行。这两点必须先补上，任何人的真实薪酬数据才谈得上接近它。",
+      },
+      {
+        q: "把两轮结果放在一起比对，会泄露某一轮扣下的东西吗？",
+        a: "原则上会，这一版也还没有防住。四道门槛都是在单轮之内判定的。如果有企业在两轮之间加入或退出，某个单元的变化就完全来自那家企业的数据行，变化足够大时便可归因到它——这是对重复聚合的经典差分攻击。按季度运行的联盟在第二个季度就会遇到。解法是第五道门槛：把一个单元与上一轮的同一单元比对，当贡献方集合变动过大时扣下不发；它所需要的历轮记录，合约已经存着了。这里主动写出来而不是留给别人发现，因为还没写出来的门槛不算门槛。",
       },
     ],
   },
