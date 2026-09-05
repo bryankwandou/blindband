@@ -72,7 +72,7 @@ did:t3n:efd91540b28ceaccc876f9d1603d3f7f0d91d64d
 > - Anchored round — devnet slot 492821211, digest `e4f528ad…a2f40beef`
 > - Static mirror — https://bryankwandou.github.io/blindband
 >
-> **Eight bug write-ups ship with it** — five platform, three of my own — each
+> **Ten bug write-ups ship with it** — five platform, five of my own — each
 > with symptom, cause, fix and what it cost, on `/en/docs`. The platform ones
 > with a suggested doc change: `invoke()` rejecting a sandbox-claimed API key
 > (BB-01), the sandbox trust manifest failing to parse so attestation cannot be
@@ -82,6 +82,15 @@ did:t3n:efd91540b28ceaccc876f9d1603d3f7f0d91d64d
 > (BB-04), and an execution locking 10,000,000,000 base units against a
 > 20,000,000,000 allocation, which rules out the obvious per-row API shape
 > (BB-05).
+>
+> The last two are mine and are the ones I would want read: I cloned my own
+> public repository into an empty directory and ran it as a stranger, and found
+> that a committed `state.json` would have made `npm run deploy` skip
+> registration on anyone else's tenant (BB-09), and that the sample data my own
+> quickstart tells you to submit had been caught by a `.gitignore` rule and was
+> not in the repository at all (BB-10). Both are fixed; the deploy now refuses
+> state belonging to another tenant, and `npm run deploy -- --dry-run` lets you
+> confirm your key and balance without spending anything.
 >
 > **What is not done.** It runs on a sandbox tenant with test credits, and
 > rounds execute under the tenant identity rather than a delegated agent key —
@@ -98,8 +107,8 @@ Character counts are of the raw text, spaces included. X shortens every URL to
 23 characters, so each of these has more headroom on the platform than the
 count suggests.
 
-Add the Terminal 3 handle to tweet 1 or 5 before posting — deliberately left
-out here rather than guessed at.
+Tweet 5 tags **@terminal3io**, which the brief names for the social-media
+bonus. Post tweet 1 first, then reply with 2–5 in order.
 
 **1/5 — 277 characters**
 
@@ -134,28 +143,24 @@ Anyone can check the round without asking me.
 8/8 passed.
 ```
 
-**4/5 — 259 characters**
+**4/5 — 244 characters**
 
 ```
-Eight bug write-ups ship with it, five platform and three mine, with what each cost.
+Ten bug write-ups ship with it, five platform and five mine.
 
-Including the one where a default target in .cargo/config.toml meant cargo test had never actually run — found by executing every command in my own README before publishing.
+The last two I found by cloning my own public repo and running it as a stranger: a committed state file and a gitignored sample dataset meant the quickstart worked for nobody but me.
 ```
 
-**5/5 — 257 characters**
+**5/5 — 246 characters**
 
 ```
-Built on the Terminal 3 ADK. Sixty-three second demo, no narration:
+Built on the Terminal 3 ADK, @terminal3io. Sixty-three second demo, no narration:
 blindband.vercel.app/demo/blindband-demo.mp4
 
 Round, verifier and walkthrough in EN / ID / 中文. Source MIT:
 github.com/bryankwandou/blindband
 
-Devnet slot 492821211, digest e4f528ad…f40beef.
-```
-
-### If only one tweet is wanted — 270 characters
-
+Devnet slot 492821211.
 ```
 Nine firms wanted a salary benchmark. None would show a competitor its payroll.
 

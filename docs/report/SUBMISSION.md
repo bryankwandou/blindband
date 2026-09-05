@@ -193,10 +193,10 @@ them would hide the most interesting thing the enclave did.
 
 ## 8. Bugs
 
-Eight write-ups with symptom, cause, fix and cost are on
+Ten write-ups with symptom, cause, fix and cost are on
 [the docs page](https://blindband.vercel.app/en/docs) and in
 [`web/src/lib/bugs.ts`](../../web/src/lib/bugs.ts). Five are platform issues,
-three are our own — kept in the report because pretending otherwise would make
+five are our own — kept in the report because pretending otherwise would make
 the other five less credible.
 
 ![The bug write-ups](../images/06-docs-en.png)
@@ -265,7 +265,75 @@ gates were covered by a command that did not run — found by executing every
 command in our own documentation before publishing, which is the only reason it
 is not still true.
 
-## 9. Status, honestly
+**BB-09 — `state.json` was committed, so the first command failed for everyone
+but us.** A clean clone carried our tenant DID and contract ids 870/871.
+Deploying with a different key printed `contract : reusing
+z:efd91540…:blindband (id 871)` — a namespace that key does not own — registered
+nothing, and scoped the new tenant's maps to `readers: { only: [870, 871] }`.
+The first `submit` would then die with AccessDenied and an empty log ring: the
+exact failure BB-03 exists to describe, re-inflicted on every reader by our own
+packaging. *Fix:* untrack the file, and have the deploy compare
+`state.tenantDid` against the DID it just connected as — foreign state is now
+announced and discarded rather than used. An unparseable state file is fatal
+too, which is the deeper fix BB-07 identified and did not make at the time.
+
+**BB-10 — the sample data our own quickstart tells you to submit was not in the
+repository.** `.gitignore` held `data/*.json` with a `!data/.gitkeep` exception,
+and `.gitkeep` was never created, so git dropped the directory entirely.
+`npm run submit -- data/records.json` referred to a file no clone contained.
+*Fix:* ignore the four generated artefacts by name and track `records.json`; the
+117 rows are synthetic, nine members named `member-01`…`member-09`.
+
+Both were found the same way, and only that way: by cloning this repository from
+GitHub into an empty directory and reading it as someone who had never seen it.
+Everything had been tested on the machine that wrote it, where both files were
+sitting on disk. That is worth stating plainly under a judging criterion about
+maintenance — the repository claimed to be reproducible in three places while
+being reproducible by nobody.
+
+## 9. Trying it yourself
+
+Two of the three tiers need nothing from us — no key, no credits, no account.
+That is the whole reason the round is anchored rather than merely published.
+
+```bash
+git clone https://github.com/bryankwandou/blindband && cd blindband
+
+cd contract && cargo test     # 23 tests: the gates and the percentile maths
+cd ../agent && npm install
+npm run digest                # rehash the published round from its own bytes
+```
+
+```text
+hashed      : 1589 bytes — the `round` value, sliced verbatim
+claimed     : e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef
+recomputed  : e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef
+[  ok  ] the digest is the one the enclave attested.
+```
+
+Or press the button on [`/en/verify`](https://blindband.vercel.app/en/verify)
+and the same hash is computed in your browser and checked against the memo on
+Solana. The digest can also be read straight off devnet without touching
+anything of ours:
+
+```bash
+curl -s -X POST https://api.devnet.solana.com -H 'Content-Type: application/json'   -d '{"jsonrpc":"2.0","id":1,"method":"getTransaction","params":["5uczxVJUm4zjwDms6R5eDC9H1G3gypRUuDA1p2B1x14bXP8QCezrFxZLgfRzfGCJLG3HDJ7ubfsWpiZBG4AJE3Hf",{"encoding":"jsonParsed","maxSupportedTransactionVersion":0}]}'
+```
+
+To run the third tier — asking the enclave itself — you need your own T3N key,
+because it spends your credits, not ours:
+
+```bash
+cp .env.example .env          # T3N_API_KEY, SOLANA_SEED_HEX
+npm run deploy -- --dry-run   # free: names your tenant, prints your balance,
+                              # and says what the real deploy would do
+```
+
+`--dry-run` exists because the first thing anyone inheriting this should be able
+to do is confirm their credentials work without spending 10,000,000,000 base
+units to find out.
+
+## 10. Status, honestly
 
 The pipeline is real and every number in this report came out of it. Two things
 are open before anyone's actual payroll should go near it:
@@ -279,7 +347,7 @@ And BB-02 means attestation is currently unverifiable against the sandbox node.
 That is a platform issue, but it is a load-bearing one for this product, so it
 belongs in the summary rather than a footnote.
 
-## 10. Continuing or handing over
+## 11. Continuing or handing over
 
 **I would like to keep running it** and take it toward a consortium pilot —
 the interesting work is signing up the first five firms and finding out where
