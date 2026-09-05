@@ -17,6 +17,37 @@ Public, no login, no analytics wall. Three locales, and the verifier on
 commit is at `https://bryankwandou.github.io/blindband` if the first is ever
 down.
 
+## 1b. The public Google Doc
+
+The brief counts a submission complete when it carries **a public Google Doc**
+alongside the repository, the screenshots and the bugs. That document is
+[`SUBMISSION.md`](SUBMISSION.md), built into a Word file with the
+screenshots embedded:
+
+```
+docs/report/Blindband — Terminal 3 ADK submission.docx
+```
+
+Regenerate it after any edit to the report — the file is derived, not
+hand-maintained:
+
+```bash
+python scripts/submission-docx.py docs/report/SUBMISSION.md   "docs/report/Blindband — Terminal 3 ADK submission.docx"
+```
+
+To publish it: upload the `.docx` to Google Drive, open it with Google Docs
+(Drive converts it), then **Share → General access → Anyone with the link →
+Viewer**, and paste that link here.
+
+```
+<paste the Google Doc link once shared>
+```
+
+The screenshots ride inside the file, so nothing has to be re-uploaded by hand,
+and every link in it resolves to a public URL — repository-relative paths are
+rewritten to `github.com/bryankwandou/blindband` on the way in, because a
+relative link is dead the moment the document leaves the repository.
+
 ## 2. Tweet Link
 
 Paste the URL of tweet 1 of the thread below once it is posted. The thread is
@@ -93,7 +124,7 @@ did:t3n:efd91540b28ceaccc876f9d1603d3f7f0d91d64d
 > laptop with no credentials. The round is not merely consistent and not merely
 > witnessed by the chain: it is derivable.
 >
-> **Eleven bug write-ups ship with it** — six platform, five of my own — each
+> **Twelve bug write-ups ship with it** — six platform, six of my own — each
 > with symptom, cause, fix and what it cost, on `/en/docs`. The platform ones
 > with a suggested doc change: `invoke()` rejecting a sandbox-claimed API key
 > (BB-01), the sandbox trust manifest failing to parse so attestation cannot be
@@ -178,7 +209,7 @@ Same crate that was compiled to wasm for the enclave. Your rows, your machine, n
 **5/6 — 245 characters**
 
 ```
-Eleven bug write-ups ship with it, six platform and five mine.
+Twelve bug write-ups ship with it, six platform and six mine.
 
 Two of mine I found by cloning my own public repo and running it as a stranger: a committed state file and a gitignored sample dataset meant the quickstart worked for nobody but me.
 ```
@@ -220,6 +251,7 @@ reads muted, and the video has no narration to lose.
 | Demo video, 1920×1080, 63 s, h264 | `web/public/demo/blindband-demo.mp4`, live at `/demo/blindband-demo.mp4` |
 | Video poster / thumbnail | `web/public/demo/poster.png` |
 | Video source (Remotion) | `video/` — `npm run render` rebuilds it |
-| Screenshots, 11, captured with Playwright | `docs/images/` |
+| Screenshots, 13 | `docs/images/` — 11 captured by `scripts/screenshots.sh` (headless Chrome, no Playwright and no browser download), 2 interaction states taken by hand |
 | Long-form report | `docs/report/SUBMISSION.md` |
+| The same report as a Google-Doc-ready file | `docs/report/Blindband — Terminal 3 ADK submission.docx`, rebuilt by `scripts/submission-docx.py` |
 | Bug write-ups | `web/src/lib/bugs.ts`, rendered at `/en/docs` |

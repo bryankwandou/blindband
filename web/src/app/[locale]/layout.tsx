@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import "@/app/globals.css";
 import { Footer } from "@/components/Footer";
 import { Nav } from "@/components/Nav";
+import { THEME_BOOTSTRAP } from "@/components/ThemeToggle";
 import { LOCALES, getDictionary, isLocale, type Locale } from "@/lib/i18n";
 
 /**
@@ -57,7 +58,19 @@ export default async function LocaleLayout({
   const t = getDictionary(locale as Locale);
 
   return (
-    <html lang={locale}>
+    // The theme attribute is written by the bootstrap script below, before
+    // React hydrates, so the server-rendered `<html>` never carries it and the
+    // mismatch is expected rather than a bug worth warning about.
+    <html lang={locale} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
+        {/* Without JavaScript the entrance animations never run and the page
+            renders at the opacity they start from, which is zero. See the note
+            in `Reveal`. */}
+        <noscript>
+          <style>{"[data-reveal]{opacity:1!important;transform:none!important}"}</style>
+        </noscript>
+      </head>
       <body className="min-h-screen antialiased">
         <Nav locale={locale as Locale} t={t} />
         <main id="main">{children}</main>

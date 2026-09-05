@@ -186,18 +186,34 @@ English is the default; Bahasa Indonesia and 中文 are hand-written, not machin
 |---|---|
 | ![Landing, English](../images/00-hero-en.png) | ![Landing, Indonesian](../images/02-landing-id.png) |
 | ![Landing, Chinese](../images/03-landing-zh.png) | ![Mobile](../images/09-mobile-en.png) |
+| ![The light theme](../images/11-light-en.png) | ![The round, light theme](../images/12-light-round.png) |
 
 Every figure on the site is read from the round file at build time. The chart
 plots all cells on one axis and keeps the withheld ones in place — dropping
 them would hide the most interesting thing the enclave did.
 
+The landing page opens on the round rather than on a claim about it: beside the
+headline sits the enclave's own output — four medians, the two cells it refused
+to publish, the digest, and the link to the anchor — so the first thing a
+reader sees above the fold is the thing they are invited to check.
+
+There are two themes. The site follows the reader's operating system on a first
+visit and remembers an explicit choice after that, applied by an inline script
+before first paint so nobody watches a dark page turn light. Every colour is a
+role rather than a value — `ink` is the page ground in both themes — which is
+why the swap is one stylesheet and not a second set of components. The light
+palette was re-derived rather than inverted: the dark amber is 2.1:1 on white
+and would have failed, so text amber, green and rust all have their own light
+values, and every pair clears WCAG AA (ivory 17.0:1, quiet 7.5:1, faint 4.7:1,
+signal 5.1:1, published 5.1:1, withheld 6.2:1).
+
 ## 8. Bugs
 
-Eleven write-ups with symptom, cause, fix and cost are on
+Twelve write-ups with symptom, cause, fix and cost are on
 [the docs page](https://blindband.vercel.app/en/docs) and in
 [`web/src/lib/bugs.ts`](../../web/src/lib/bugs.ts). Six are platform issues,
-five are our own — kept in the report because pretending otherwise would make
-the other five less credible.
+six are our own — kept in the report because pretending otherwise would make
+the other six less credible.
 
 ![The bug write-ups](../images/06-docs-en.png)
 

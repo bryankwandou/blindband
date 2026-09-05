@@ -11,6 +11,13 @@ import type { ReactNode } from "react";
  * rather than lively. Opacity and transform only — nothing here can reflow, so
  * the animation cannot cost layout work, and honouring `prefers-reduced-motion`
  * is a matter of returning the children as they are.
+ *
+ * The `data-reveal` marker exists for the case where the animation never gets
+ * to run. The server-rendered HTML carries the initial `opacity: 0`, so with
+ * JavaScript disabled — a reader who blocks it, a crawler that does not run it,
+ * a screenshot taken before hydration — the whole page was blank apart from the
+ * nav and the footer. The `<noscript>` rule in the layout keys off this
+ * attribute and puts every reveal back at full opacity.
  */
 export function Reveal({
   children,
@@ -33,6 +40,7 @@ export function Reveal({
 
   return (
     <Tag
+      data-reveal=""
       className={className}
       initial={{ opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}

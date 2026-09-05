@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Wordmark } from "@/components/Logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { LOCALES, LOCALE_LABELS, type Dictionary, type Locale } from "@/lib/i18n";
 
 const REPO = "https://github.com/bryankwandou/blindband";
@@ -42,7 +43,7 @@ export function Nav({ locale, t }: { locale: Locale; t: Dictionary }) {
     >
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded focus:bg-signal focus:px-3 focus:py-1.5 focus:text-sm focus:font-medium focus:text-ink"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded focus:bg-fill focus:px-3 focus:py-1.5 focus:text-sm focus:font-medium focus:text-on-fill"
       >
         {t.nav.skip}
       </a>
@@ -70,7 +71,9 @@ export function Nav({ locale, t }: { locale: Locale; t: Dictionary }) {
           })}
         </div>
 
-        <div className="ml-auto flex items-center gap-1 sm:ml-0">
+        <div className="ml-auto flex items-center gap-1.5 sm:ml-0">
+          <ThemeToggle t={t} />
+
           <div className="flex items-center rounded-full border border-line p-0.5">
             {LOCALES.map((l) => (
               <Link
