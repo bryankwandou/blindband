@@ -105,4 +105,26 @@ export const BUGS: BugNote[] = [
     fix: "Delete the default target and name it on the one command that needs it — `cargo build --target wasm32-wasip2 --release`, which is what the deploy script already looked for. Plain `cargo test` now runs the 23 host tests.",
     cost: "Small in minutes, large in consequence: the repository claimed the gates were covered by a command that did not run. Found by actually running every command in our own documentation before publishing.",
   },
+  {
+    id: "BB-09",
+    kind: "ours",
+    title: "state.json was committed, so the first command failed for everyone but us",
+    symptom:
+      "A clean clone carries `agent/state.json` naming our tenant DID and contract ids 870/871. On someone else's key, `npm run deploy` prints `contract : reusing z:efd91540…:blindband (id 871)` — a namespace that key does not own — registers nothing, and scopes their two maps to `readers: { only: [870, 871] }`. The first `submit` then dies with AccessDenied and an empty log ring.",
+    cause:
+      "`.gitignore` covered `data/*.json` and `.env` but not `state.json`, and `deploy.ts` trusted whatever the file said without checking it against the tenant it had just connected as.",
+    fix: "Untrack `state.json`, and make the deploy compare `state.tenantDid` with the connected DID — foreign state is announced and discarded rather than used. An unparseable state file is now fatal too, which is the deeper fix BB-07 identified and did not make at the time.",
+    cost: "Nothing to us, which is exactly the problem: we only found it by cloning our own public repository and reading it as a stranger. It would have failed for every judge, in the most confusing way this platform offers.",
+  },
+  {
+    id: "BB-10",
+    kind: "ours",
+    title: "The sample data the README tells you to submit was not in the repository",
+    symptom:
+      "`npm run submit -- data/records.json` is the second command in our own quickstart. A clean clone has no `agent/data/` directory at all.",
+    cause:
+      "`.gitignore` held `data/*.json` with a `!data/.gitkeep` exception, and `.gitkeep` was never created — so git dropped the directory entirely. The rule was written to keep generated round and receipt files out, and it took the one input file with them.",
+    fix: "Ignore the four generated artefacts by name and track `records.json`. The 117 rows are synthetic — nine members named `member-01`…`member-09` — so there is nothing to withhold.",
+    cost: "Found in the same pass as BB-09. Between them, the pipeline was reproducible by nobody, while the repository claimed otherwise in three places.",
+  },
 ];

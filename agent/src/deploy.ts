@@ -51,11 +51,39 @@ interface DeployState {
 
 function readState(): Partial<DeployState> {
   if (!existsSync(STATE_PATH)) return {};
+  const raw = readFileSync(STATE_PATH, "utf8");
   try {
-    return JSON.parse(readFileSync(STATE_PATH, "utf8")) as Partial<DeployState>;
-  } catch {
-    return {};
+    // `replace` strips a UTF-8 BOM. PowerShell writes one by default, and an
+    // unparseable state file used to be swallowed here and treated as "nothing
+    // deployed yet" — which re-registered the contract and failed confusingly
+    // one call later. An unreadable state file is now fatal: it is the only
+    // record of which contract ids the map ACLs must name.
+    return JSON.parse(raw.replace(/^﻿/, "")) as Partial<DeployState>;
+  } catch (err) {
+    throw new Error(
+      `${STATE_PATH} exists but does not parse as JSON: ${
+        err instanceof Error ? err.message : String(err)
+      }
+Delete it to deploy from scratch, or repair it — do not let the deploy guess.`,
+    );
   }
+}
+
+/**
+ * State written by a different tenant is worse than no state at all.
+ *
+ * It names contract ids and a namespace this key does not own, so the deploy
+ * would skip registration ("reusing z:<someone else>:blindband"), then scope
+ * this tenant's maps to ids belonging to that other tenant. The contract would
+ * then die during instantiation with AccessDenied and an empty log ring — the
+ * failure BB-03 exists to describe. Start clean instead, and say so.
+ */
+function stateForThisTenant(prior: Partial<DeployState>, did: string): Partial<DeployState> {
+  if (!prior.tenantDid || prior.tenantDid === did) return prior;
+  console.log(`state       : ignoring state.json — it belongs to ${prior.tenantDid},`);
+  console.log(`              not ${did}. Deploying this tenant from scratch.
+`);
+  return {};
 }
 
 /** `MapAlreadyExists` is the idempotent case, not a failure. */
@@ -82,7 +110,23 @@ async function main() {
   console.log(`credits     : ${formatCredits(before)}\n`);
 
   const tenant = tenantFor(session);
-  const prior = readState();
+  const prior = stateForThisTenant(readState(), session.did);
+
+  // `npm run deploy -- --dry-run` stops here. Everything above this line is
+  // free: it proves the key works, names the tenant it belongs to, reports the
+  // balance and says which state file the deploy would act on. Everything below
+  // spends. Anyone picking this repository up should run it once before they
+  // spend anything, and it is the only way to see the state check fire without
+  // registering a contract.
+  if (process.argv.includes("--dry-run")) {
+    console.log("dry run     : stopping before anything is registered or created.");
+    console.log(
+      prior.contractId
+        ? `              Would reuse ${prior.contractName} (id ${prior.contractId}).`
+        : `              Would register ${CONTRACT_TAIL}@${CONTRACT_VERSION} and create ${MAPS.join(", ")}.`,
+    );
+    return;
+  }
 
   // ── contract ───────────────────────────────────────────────────────────
   let contractId = prior.contractId;

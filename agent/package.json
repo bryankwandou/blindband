@@ -11,7 +11,8 @@
     "anchor": "tsx src/anchor.ts",
     "verify": "tsx src/verify.ts",
     "call": "tsx src/call.ts",
-    "diagnose": "tsx src/diagnose.ts"
+    "diagnose": "tsx src/diagnose.ts",
+    "digest": "tsx src/digest-check.ts"
   },
   "keywords": [],
   "author": "",

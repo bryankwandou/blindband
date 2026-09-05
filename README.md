@@ -58,7 +58,35 @@ for that consortium's counsel.
 
 ---
 
-## Running a round
+## Trying it without asking us for anything
+
+Two of the three tiers of verification need no credentials, no key and no
+credits — which is the point of anchoring the round in the first place.
+
+```bash
+# the gates and the percentile maths, on your own machine, in under a second
+cd contract && cargo test          # 23 tests, host toolchain, no node needed
+
+# the published round, rehashed from its own bytes
+cd ../agent && npm install
+npm run digest                     # no key, no credits, no network
+```
+
+```text
+hashed      : 1589 bytes — the `round` value, sliced verbatim
+claimed     : e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef
+recomputed  : e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef
+
+[  ok  ] the digest is the one the enclave attested.
+```
+
+
+Or open https://blindband.vercel.app/en/verify and press the button: the digest
+is recomputed in your browser with the Web Crypto API and checked against the
+memo on Solana. Nothing of ours is in that loop — if this repository vanished
+tomorrow, the round would still be checkable.
+
+## Running a round on your own tenant
 
 ```bash
 # 0. build the component
@@ -67,6 +95,7 @@ cd contract && cargo build --target wasm32-wasip2 --release
 cd ../agent && npm install
 cp .env.example .env      # T3N_API_KEY, SOLANA_SEED_HEX
 
+npm run deploy -- --dry-run           # free: names your tenant, shows the balance
 npm run deploy                        # register + scope the sealed maps
 npm run submit -- data/records.json   # 117 rows, one execution
 npm run round -- 2026-q1              # aggregate inside the enclave
@@ -148,7 +177,7 @@ there is no egress surface to review and nothing to allowlist.
 
 ## Bugs and platform notes
 
-Eight write-ups — five platform, three of our own — are on
+Ten write-ups — five platform, five of our own — are on
 [the docs page](https://blindband.vercel.app/en/docs), with symptom, cause, fix
 and what each one cost. The three that will cost the next person the most time:
 
@@ -163,6 +192,13 @@ and what each one cost. The three that will cost the next person the most time:
 3. **An execution locks 10,000,000,000 base units** against a 20,000,000,000
    allocation, though a real round settles at ~150,000,000. This rules out the
    obvious per-row API design; batch instead.
+
+The two most recent are ours and were found the only way they could have been:
+by cloning this repository from GitHub and running it as a stranger. `state.json`
+was committed, so `npm run deploy` would have skipped registration on anyone
+else's tenant and scoped their maps to contract ids they do not own (BB-09); and
+`data/records.json` — the file the quickstart above tells you to submit — was
+caught by a `.gitignore` rule and was not in the repository at all (BB-10).
 
 ## Status
 
