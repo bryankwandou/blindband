@@ -359,6 +359,82 @@ works. So the harness tampers with its own inputs — one median raised by a
 cent, one salary raised by a dollar — and requires both to be rejected before
 it reports success.
 
+### Running the agent, not just checking its homework
+
+Verifying a past round is one thing; a reviewer is entitled to ask whether the
+agent can be *used*. It can, on their own data, offline, with no account:
+
+```bash
+cd contract
+cargo run --example replay -- examples/payroll-sample.csv --round-id demo
+```
+
+```text
+ingested 30 rows from 5 contributors — 5 too recent, 0 malformed
+1 cells published, 2 withheld
+
+PUBLISHED
+  cell                     cur          p10    median       p90  firms  top firm
+  backend engineer l4      EUR      6916.00   7415.00   8009.00      5    25.00%
+
+WITHHELD
+  data scientist l5        contributor_concentration_exceeded     5 firms / 10 rows
+  engineering manager m2   below_contributor_floor                3 firms / 3 rows
+```
+
+This is not a demonstration written to look like the enclave. It calls
+`policy::aggregate` and `policy::round_digest` out of the same crate that was
+compiled to `wasm32-wasip2` and registered as the component — the same code
+paths, the same constants, the same gates. The enclave is what keeps the inputs
+sealed from the other members; it does not get a vote on the arithmetic.
+
+The sample file makes all four gates fire in one run, deliberately. The one
+published cell sits at exactly 25.00% concentration — one row either way and it
+is withheld. The five product designer rows never reach the maths, because
+their pay is effective in 2030 and gate 1 drops anything less than 91 days old.
+
+A reviewer can point it at their own extract instead. The header row is the
+whole schema:
+
+```text
+contributor,role,level,region,currency,base_minor,effective_at
+acme,Backend Engineer,L4,EU,EUR,720000,1755000000
+```
+
+Move a salary, remove a contributor, change a date, and watch cells stop being
+publishable. That is the product argument, made on the reviewer's own numbers
+rather than ours.
+
+### Deriving the anchored digest on your own machine
+
+The same command rebuilds the round that is on Solana:
+
+```bash
+cargo run --example replay -- --replay
+```
+
+```text
+digest       : e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef
+expected     : e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef
+
+[  ok  ] this machine derived the digest that is anchored on Solana devnet.
+         Same inputs, same code, same answer — no enclave, no key, no network.
+```
+
+`agent/data/receipts.json` is committed for this reason: the commitments it
+holds are what allow the 117 submissions to be reconstructed exactly as the
+ledger held them, rather than approximately. With them, a laptop with no
+credentials derives `e4f528ad…beef` — the digest written to devnet on 4
+September, in a transaction that predates the reviewer's interest in it.
+
+The four checks in `npm run judge` show the published round is internally
+consistent and that the chain agrees. This shows something stronger: the round
+is *derivable*. Nothing about it has to be taken on our word, including the
+claim that an enclave ran it.
+
+
+### Reading the anchor without any of our code
+
 Only the third check needs the internet, and it reaches a public Solana RPC
 endpoint rather than anything we run. The same fact can be read with `curl` and
 no code of ours at all:
@@ -371,7 +447,7 @@ curl -s -X POST https://api.devnet.solana.com -H 'Content-Type: application/json
 Or press the button on [`/en/verify`](https://blindband.vercel.app/en/verify),
 where the digest is recomputed in the browser with the Web Crypto API.
 
-The gates can also be exercised directly, with no node and no JavaScript:
+The gates also carry their own unit tests, with no node and no JavaScript:
 
 ```bash
 cd contract && cargo test     # 23 tests on the percentile maths and the four gates
