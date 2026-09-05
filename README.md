@@ -58,33 +58,70 @@ for that consortium's counsel.
 
 ---
 
-## Trying it without asking us for anything
+## Checking it yourself, without asking us for anything
 
-Two of the three tiers of verification need no credentials, no key and no
-credits — which is the point of anchoring the round in the first place.
+There is one command, and it needs no API key, no test credits, no account and
+no cooperation from us.
 
 ```bash
-# the gates and the percentile maths, on your own machine, in under a second
-cd contract && cargo test          # 23 tests, host toolchain, no node needed
-
-# the published round, rehashed from its own bytes
-cd ../agent && npm install
-npm run digest                     # no key, no credits, no network
+cd agent && npm install
+npm run judge
 ```
 
 ```text
-hashed      : 1589 bytes — the `round` value, sliced verbatim
-claimed     : e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef
-recomputed  : e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef
+round        : 2026-q1  (blindband-safe-harbour/v1)
+submissions  : 117 rows, read from agent/data/records.json
+rpc          : https://api.devnet.solana.com
 
-[  ok  ] the digest is the one the enclave attested.
+[  ok  ] the gates and the maths, recomputed from the raw submissions
+         70 fields agree — 4 cells published, 2 withheld (contributor_concentration_exceeded, below_contributor_floor)
+
+[  ok  ] the digest, recomputed from the published bytes
+         1589 bytes hashed → e4f528ad321626b2…2f40beef — the digest the enclave attested
+
+[  ok  ] the digest, read back off Solana devnet
+         tx 5uczxVJUm4zj… carries d=e4f528ad321626b2… for round 2026-q1,
+         written at slot 492821211 — before you asked, and not by anything of ours
+
+[  ok  ] the negative controls — a verifier that can say no
+         one median raised by $0.01 → 843d5cdd8ecf6a87…, rejected
+         one salary raised by $1.00 → recomputation diverges, rejected
+
+──────────────────────────────────────────────────────────────────────
+4/4 checks passed. The published round is the one the enclave
+produced from these submissions, and the chain agrees.
 ```
 
+The four checks are different in kind on purpose, because passing all four is
+much harder to fake than passing any one of them.
+
+1. **The numbers are rederived, not read.** `agent/src/lib/recompute.ts` is a
+   second implementation of the four gates and the percentile maths, written
+   against `policy.rs` rather than sharing code with it. It folds the 117 raw
+   submissions into a round of its own and diffs it against the published one
+   field by field — every percentile, every contributor count, both withholding
+   reasons. Numbers typed in by hand do not survive this check.
+2. **The digest is rehashed from the published bytes**, sliced verbatim out of
+   the response, because the hash covers the contract's own encoding rather
+   than a reformatted copy of it.
+3. **The digest is read back off Solana devnet** through a public RPC endpoint
+   we do not run. If this repository vanished tonight, that check would still
+   work tomorrow.
+4. **Two negative controls.** A round with one median moved by a cent, and a
+   submission set with one salary moved by a dollar, must both be rejected — so
+   a verifier that only ever says yes gets caught from the outside.
+
+Only the third check needs the internet. To go further:
+
+```bash
+cd contract && cargo test    # 23 tests on the gates and the maths — no node, no enclave
+cd agent && npm run digest   # just the hash, if that is all you want
+npm run probe:agent          # ask the platform whether this tier can hold an agent key
+```
 
 Or open https://blindband.vercel.app/en/verify and press the button: the digest
 is recomputed in your browser with the Web Crypto API and checked against the
-memo on Solana. Nothing of ours is in that loop — if this repository vanished
-tomorrow, the round would still be checkable.
+memo on Solana. Nothing of ours is in that loop.
 
 ## Running a round on your own tenant
 
@@ -139,7 +176,10 @@ agent/src/submit.ts      batch ingestion
 agent/src/round.ts       run the aggregation, write round.json verbatim
 agent/src/anchor.ts      verify locally, then anchor on devnet
 agent/src/verify.ts      offline + on-chain + enclave checks
-agent/state.json         the only state outside git
+agent/src/judge.ts       the same round, checked by a stranger with no credentials
+agent/src/lib/recompute.ts  a second implementation of the ruleset, for check 1
+agent/data/records.json  the 117 submissions the published round was built from
+agent/state.json         the only state outside git, and not in it
 
 web/                     the public site, 3 locales, statically generated
 video/                   the demo video, as Remotion compositions
@@ -177,7 +217,7 @@ there is no egress surface to review and nothing to allowlist.
 
 ## Bugs and platform notes
 
-Ten write-ups — five platform, five of our own — are on
+Eleven write-ups — six platform, five of our own — are on
 [the docs page](https://blindband.vercel.app/en/docs), with symptom, cause, fix
 and what each one cost. The three that will cost the next person the most time:
 
@@ -205,8 +245,13 @@ caught by a `.gitignore` rule and was not in the repository at all (BB-10).
 The pipeline is real and every number above came out of it. Two things are open
 before anyone's actual payroll should go near it: it runs on a sandbox tenant
 with test credits, and rounds currently execute under the tenant identity
-rather than a delegated agent key. The sandbox trust manifest also fails to
-parse, so attestation cannot currently be verified against that node — the
+rather than a delegated agent key — `client.createAgent()` exists and is
+callable, but a sandbox-claimed DID is not an organisation with policy
+metadata, so it refuses (BB-11). `npm run probe:agent` asks the platform that
+question in one call and creates nothing, so anyone can check whether their own
+tier has lifted rather than taking our word for it.
+
+The sandbox trust manifest also fails to parse, so attestation cannot currently be verified against that node — the
 agent prints that warning rather than hiding it.
 
 ## Continuing or handing over

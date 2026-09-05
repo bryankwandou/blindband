@@ -12,7 +12,9 @@
     "verify": "tsx src/verify.ts",
     "call": "tsx src/call.ts",
     "diagnose": "tsx src/diagnose.ts",
-    "digest": "tsx src/digest-check.ts"
+    "digest": "tsx src/digest-check.ts",
+    "probe:agent": "tsx src/probe-agent.ts",
+    "judge": "tsx src/judge.ts"
   },
   "keywords": [],
   "author": "",
