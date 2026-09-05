@@ -193,9 +193,9 @@ them would hide the most interesting thing the enclave did.
 
 ## 8. Bugs
 
-Ten write-ups with symptom, cause, fix and cost are on
+Eleven write-ups with symptom, cause, fix and cost are on
 [the docs page](https://blindband.vercel.app/en/docs) and in
-[`web/src/lib/bugs.ts`](../../web/src/lib/bugs.ts). Five are platform issues,
+[`web/src/lib/bugs.ts`](../../web/src/lib/bugs.ts). Six are platform issues,
 five are our own — kept in the report because pretending otherwise would make
 the other five less credible.
 
@@ -291,47 +291,107 @@ sitting on disk. That is worth stating plainly under a judging criterion about
 maintenance — the repository claimed to be reproducible in three places while
 being reproducible by nobody.
 
+**BB-11 — a sandbox tenant cannot provision the delegated agent identity the
+SDK offers it.** `client.createAgent(did, "blindband-round-runner")` is present
+and callable, and on a sandbox-claimed DID it returns `RPC Error: organisation
+has no policy meta`. *Cause:* `createAgent` expects an *organisation* DID whose
+caller is an admin of it; a DID claimed from the community sandbox page is not
+an organisation and carries no policy metadata. This is BB-01's tier boundary
+seen from the other side — the opaque `t3n_key_…` that the flat `invoke()` path
+demands is exactly what `createAgent` would have returned. *Fix:* none from this
+tier. Rounds run under the tenant identity, and the report says so rather than
+implying an agent key that does not exist. `npm run probe:agent` makes the call
+in one command and prints whatever the platform answers, so the next person can
+tell in seconds whether their tier has lifted. *Cost:* no lost time, but it is
+the largest remaining gap between what this is and what an agent on this
+platform is meant to be, and it is not closable by writing better code.
+
+
 ## 9. Trying it yourself
 
-Two of the three tiers need nothing from us — no key, no credits, no account.
-That is the whole reason the round is anchored rather than merely published.
+The reviewer should not have to take any of the above on trust, and does not
+have to ask us for anything to avoid it. One command, no key, no credits, no
+account:
 
 ```bash
-git clone https://github.com/bryankwandou/blindband && cd blindband
-
-cd contract && cargo test     # 23 tests: the gates and the percentile maths
-cd ../agent && npm install
-npm run digest                # rehash the published round from its own bytes
+git clone https://github.com/bryankwandou/blindband && cd blindband/agent
+npm install
+npm run judge
 ```
 
 ```text
-hashed      : 1589 bytes — the `round` value, sliced verbatim
-claimed     : e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef
-recomputed  : e4f528ad321626b2daf9b667188937609cd160a21a739d542eabd44a2f40beef
-[  ok  ] the digest is the one the enclave attested.
+round        : 2026-q1  (blindband-safe-harbour/v1)
+submissions  : 117 rows, read from agent/data/records.json
+rpc          : https://api.devnet.solana.com
+
+[  ok  ] the gates and the maths, recomputed from the raw submissions
+         70 fields agree — 4 cells published, 2 withheld (contributor_concentration_exceeded, below_contributor_floor)
+
+[  ok  ] the digest, recomputed from the published bytes
+         1589 bytes hashed → e4f528ad321626b2…2f40beef — the digest the enclave attested
+
+[  ok  ] the digest, read back off Solana devnet
+         tx 5uczxVJUm4zj… carries d=e4f528ad321626b2… for round 2026-q1,
+         written at slot 492821211 — before you asked, and not by anything of ours
+
+[  ok  ] the negative controls — a verifier that can say no
+         one median raised by $0.01 → 843d5cdd8ecf6a87…, rejected
+         one salary raised by $1.00 → recomputation diverges, rejected
+
+──────────────────────────────────────────────────────────────────────
+4/4 checks passed. The published round is the one the enclave
+produced from these submissions, and the chain agrees.
 ```
 
-Or press the button on [`/en/verify`](https://blindband.vercel.app/en/verify)
-and the same hash is computed in your browser and checked against the memo on
-Solana. The digest can also be read straight off devnet without touching
-anything of ours:
+The first check is the one that matters most and the one that took the most
+care to make honest. `agent/src/lib/recompute.ts` is a **second implementation**
+of the four gates and the percentile maths — written in TypeScript against
+`policy.rs` and `stats.rs`, sharing no code with them. It reads the 117 raw
+submissions, folds them into a round of its own, and diffs that against the
+published round field by field: every percentile, every mean, every contributor
+count, every top-contributor share, and both withholding reasons. Seventy
+fields have to agree. A table of plausible-looking numbers typed in by hand
+does not survive it, and neither would a subtle change to a gate threshold.
+
+The fourth check exists for the opposite reason. A verifier that only ever
+prints `ok` is worthless, and from the outside it looks identical to one that
+works. So the harness tampers with its own inputs — one median raised by a
+cent, one salary raised by a dollar — and requires both to be rejected before
+it reports success.
+
+Only the third check needs the internet, and it reaches a public Solana RPC
+endpoint rather than anything we run. The same fact can be read with `curl` and
+no code of ours at all:
 
 ```bash
-curl -s -X POST https://api.devnet.solana.com -H 'Content-Type: application/json'   -d '{"jsonrpc":"2.0","id":1,"method":"getTransaction","params":["5uczxVJUm4zjwDms6R5eDC9H1G3gypRUuDA1p2B1x14bXP8QCezrFxZLgfRzfGCJLG3HDJ7ubfsWpiZBG4AJE3Hf",{"encoding":"jsonParsed","maxSupportedTransactionVersion":0}]}'
+curl -s -X POST https://api.devnet.solana.com -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"getTransaction","params":["5uczxVJUm4zjwDms6R5eDC9H1G3gypRUuDA1p2B1x14bXP8QCezrFxZLgfRzfGCJLG3HDJ7ubfsWpiZBG4AJE3Hf",{"encoding":"jsonParsed","maxSupportedTransactionVersion":0}]}'
 ```
 
-To run the third tier — asking the enclave itself — you need your own T3N key,
-because it spends your credits, not ours:
+Or press the button on [`/en/verify`](https://blindband.vercel.app/en/verify),
+where the digest is recomputed in the browser with the Web Crypto API.
+
+The gates can also be exercised directly, with no node and no JavaScript:
 
 ```bash
-cp .env.example .env          # T3N_API_KEY, SOLANA_SEED_HEX
-npm run deploy -- --dry-run   # free: names your tenant, prints your balance,
-                              # and says what the real deploy would do
+cd contract && cargo test     # 23 tests on the percentile maths and the four gates
+```
+
+Only the third tier — asking the enclave itself — needs a T3N key, because it
+spends the reviewer's credits rather than ours:
+
+```bash
+cd agent && cp .env.example .env   # T3N_API_KEY, SOLANA_SEED_HEX
+npm run deploy -- --dry-run        # free: names your tenant, prints your balance,
+                                   # and says what the real deploy would do
+npm run probe:agent                # free: asks whether your tier can hold an agent key
 ```
 
 `--dry-run` exists because the first thing anyone inheriting this should be able
 to do is confirm their credentials work without spending 10,000,000,000 base
-units to find out.
+units to find out. `probe:agent` is the same courtesy applied to BB-11: rather
+than asking anyone to believe that delegated agent provisioning is unavailable
+on the sandbox tier, it makes the call and prints whatever the platform says.
 
 ## 10. Status, honestly
 

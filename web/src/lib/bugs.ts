@@ -127,4 +127,15 @@ export const BUGS: BugNote[] = [
     fix: "Ignore the four generated artefacts by name and track `records.json`. The 117 rows are synthetic — nine members named `member-01`…`member-09` — so there is nothing to withhold.",
     cost: "Found in the same pass as BB-09. Between them, the pipeline was reproducible by nobody, while the repository claimed otherwise in three places.",
   },
+  {
+    id: "BB-11",
+    kind: "platform",
+    title: "A sandbox tenant cannot provision the delegated agent identity the SDK offers it",
+    symptom:
+      "`client.createAgent(did, \"blindband-round-runner\")` on a sandbox-claimed tenant returns `RPC Error: organisation has no policy meta`. The method is present and callable; the tier is not.",
+    cause:
+      "`createAgent` takes an *organisation* DID and requires the caller to be one of its admins. A DID claimed from the community sandbox page is not an organisation and carries no policy metadata, so there is no organisation for the agent to belong to. This is the same tier boundary as BB-01, seen from the other side: the opaque `t3n_key_…` that the flat `invoke()` path wants is precisely what `createAgent` returns.",
+    fix: "None available from this tier. Rounds run under the tenant identity, and the agent reports which identity ran a round rather than implying otherwise. `npm run probe:agent` re-runs the check in one call, so whoever inherits this can tell in seconds whether their tier has lifted.",
+    cost: "No lost time — but it is the single largest gap between what this is and what an agent on this platform is supposed to be, and it is not closable by writing better code.",
+  },
 ];
