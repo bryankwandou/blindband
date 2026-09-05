@@ -72,7 +72,28 @@ did:t3n:efd91540b28ceaccc876f9d1603d3f7f0d91d64d
 > - Anchored round — devnet slot 492821211, digest `e4f528ad…a2f40beef`
 > - Static mirror — https://bryankwandou.github.io/blindband
 >
-> **Ten bug write-ups ship with it** — five platform, five of my own — each
+> **You can run all of it yourself, and none of it needs anything from me.**
+> One command checks the published round four different ways — the bands
+> recomputed from the raw submissions by a second implementation of the ruleset,
+> the digest rehashed from the published bytes, the digest read back off devnet
+> through a public RPC endpoint, and two deliberately tampered inputs that must
+> be rejected before it reports success:
+>
+> ```
+> git clone https://github.com/bryankwandou/blindband && cd blindband/agent
+> npm install && npm run judge          # 4/4, no key, no credits, no account
+> ```
+>
+> And the agent can be *used*, not just audited. `cargo run --example replay --
+> your-payroll.csv` puts any CSV through the four gates and prints what it would
+> publish, what it would withhold and why — calling `policy::aggregate` out of
+> the same crate that was compiled to wasm and registered as the component.
+> `cargo run --example replay -- --replay` rebuilds the published round from its
+> own inputs and derives `e4f528ad…beef`, the digest anchored on devnet, on a
+> laptop with no credentials. The round is not merely consistent and not merely
+> witnessed by the chain: it is derivable.
+>
+> **Eleven bug write-ups ship with it** — six platform, five of my own — each
 > with symptom, cause, fix and what it cost, on `/en/docs`. The platform ones
 > with a suggested doc change: `invoke()` rejecting a sandbox-claimed API key
 > (BB-01), the sandbox trust manifest failing to parse so attestation cannot be
@@ -90,7 +111,10 @@ did:t3n:efd91540b28ceaccc876f9d1603d3f7f0d91d64d
 > quickstart tells you to submit had been caught by a `.gitignore` rule and was
 > not in the repository at all (BB-10). Both are fixed; the deploy now refuses
 > state belonging to another tenant, and `npm run deploy -- --dry-run` lets you
-> confirm your key and balance without spending anything.
+> confirm your key and balance without spending anything. BB-11 is the sixth
+> platform one: `client.createAgent()` is callable but a sandbox-claimed DID is
+> not an organisation with policy metadata, so it refuses — `npm run probe:agent`
+> makes that call and prints your own tier’s answer rather than mine.
 >
 > **What is not done.** It runs on a sandbox tenant with test credits, and
 > rounds execute under the tenant identity rather than a delegated agent key —
@@ -107,10 +131,10 @@ Character counts are of the raw text, spaces included. X shortens every URL to
 23 characters, so each of these has more headroom on the platform than the
 count suggests.
 
-Tweet 5 tags **@terminal3io**, which the brief names for the social-media
-bonus. Post tweet 1 first, then reply with 2–5 in order.
+Tweet 6 tags **@terminal3io**, which the brief names for the social-media
+bonus. Post tweet 1 first, then reply with 2–6 in order.
 
-**1/5 — 277 characters**
+**1/6 — 277 characters**
 
 ```
 Nine firms wanted a salary benchmark. None would show a competitor its payroll.
@@ -120,7 +144,7 @@ Blindband runs the aggregation inside a Terminal 3 TEE, publishes a cell only if
 117 rows. 4 cells published, 2 withheld.
 ```
 
-**2/5 — 273 characters**
+**2/6 — 273 characters**
 
 ```
 The withheld cells are the point.
@@ -131,27 +155,35 @@ Engineering manager M2 — only 3 firms in the cell.
 Both had enough data to compute. The enclave computed them, then declined to emit the numbers. Two different gates, firing on their own.
 ```
 
-**3/5 — 266 characters**
+**3/6 — 257 characters**
 
 ```
-Anyone can check the round without asking me.
+Anyone can check the round without asking me for anything.
 
-1. SHA-256 over the published bytes, recomputed in your own browser
-2. the same digest, on Solana devnet as an SPL Memo
-3. receipt inclusion, asked of the contract — the third probe is a forgery, on purpose
+git clone, then one command: the bands recomputed from the raw rows by a second implementation, the digest rehashed, the digest read off devnet, and two tampered inputs that must be rejected.
 
-8/8 passed.
+4/4.
 ```
 
-**4/5 — 244 characters**
+**4/6 — 255 characters**
 
 ```
-Ten bug write-ups ship with it, five platform and five mine.
+And you can run the agent, not just check its homework.
 
-The last two I found by cloning my own public repo and running it as a stranger: a committed state file and a gitignored sample dataset meant the quickstart worked for nobody but me.
+cargo run --example replay -- your-payroll.csv
+
+Same crate that was compiled to wasm for the enclave. Your rows, your machine, no key. --replay derives e4f528ad…beef — the digest anchored on devnet.
 ```
 
-**5/5 — 246 characters**
+**5/6 — 245 characters**
+
+```
+Eleven bug write-ups ship with it, six platform and five mine.
+
+Two of mine I found by cloning my own public repo and running it as a stranger: a committed state file and a gitignored sample dataset meant the quickstart worked for nobody but me.
+```
+
+**6/6 — 246 characters**
 
 ```
 Built on the Terminal 3 ADK, @terminal3io. Sixty-three second demo, no narration:
@@ -161,6 +193,12 @@ Round, verifier and walkthrough in EN / ID / 中文. Source MIT:
 github.com/bryankwandou/blindband
 
 Devnet slot 492821211.
+```
+
+### Or, as a single tweet
+
+**270 characters**
+
 ```
 Nine firms wanted a salary benchmark. None would show a competitor its payroll.
 
