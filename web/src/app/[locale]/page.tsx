@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { BandChart } from "@/components/BandChart";
+import { DemoVideo } from "@/components/DemoVideo";
 import { Reveal } from "@/components/Reveal";
 import { RoundProof } from "@/components/RoundProof";
 import { TerminalReplay } from "@/components/TerminalReplay";
@@ -179,6 +180,10 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         </Reveal>
 
         <Reveal delay={0.12}>
+          <DemoVideo t={t} className="mt-12" />
+        </Reveal>
+
+        <Reveal delay={0.14}>
           <TerminalReplay className="mt-12" />
         </Reveal>
       </section>

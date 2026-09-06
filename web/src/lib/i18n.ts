@@ -74,7 +74,15 @@ export interface Dictionary {
     body: string;
     aside: string;
   };
-  how: { kicker: string; title: string; steps: [Step, Step, Step]; caption: string };
+  how: {
+    kicker: string;
+    title: string;
+    steps: [Step, Step, Step];
+    caption: string;
+    videoTitle: string;
+    videoCaption: string;
+    videoFallback: string;
+  };
   gates: {
     kicker: string;
     title: string;
@@ -220,6 +228,10 @@ const en: Dictionary = {
     ],
     caption:
       "The contract asks for three host capabilities: key-value storage, logging, and tenant context. It does not ask for outbound HTTP, so there is no egress surface to review.",
+    videoTitle: "The whole thing, in sixty-three seconds",
+    videoCaption:
+      "No narration — the captions are on screen, so it reads with the sound off. Every figure in it is taken from the two data files this page reads, so a number in the video cannot drift from the round it claims to show.",
+    videoFallback: "Your browser will not play this. The file is here: /demo/blindband-demo.mp4 (MP4, 7 MB).",
   },
   gates: {
     kicker: "The ruleset",
@@ -457,6 +469,10 @@ const id: Dictionary = {
     ],
     caption:
       "Kontrak ini meminta tiga kapabilitas host: penyimpanan key-value, logging, dan tenant context. Ia tidak meminta HTTP keluar, jadi tidak ada permukaan egress yang perlu ditinjau.",
+    videoTitle: "Semuanya, dalam enam puluh tiga detik",
+    videoCaption:
+      "Tanpa narasi — teksnya ada di layar, jadi tetap terbaca meski suara dimatikan. Setiap angka di dalamnya diambil dari dua berkas data yang dibaca halaman ini juga, sehingga angka di video tidak bisa melenceng dari ronde yang diklaimnya.",
+    videoFallback: "Peramban Anda tidak bisa memutarnya. Berkasnya ada di sini: /demo/blindband-demo.mp4 (MP4, 7 MB).",
   },
   gates: {
     kicker: "Aturan main",
@@ -694,6 +710,10 @@ const zh: Dictionary = {
     ],
     caption:
       "该合约申请三项宿主能力：键值存储、日志与租户上下文。它不申请出站 HTTP，因此没有需要审查的外发面。",
+    videoTitle: "六十三秒看完全部",
+    videoCaption:
+      "没有旁白——字幕都在画面上，静音也读得下来。片中每一个数字都取自本页读取的同两份数据文件，因此视频里的数字不可能与它所声称的那一轮对不上。",
+    videoFallback: "你的浏览器无法播放。文件在这里：/demo/blindband-demo.mp4（MP4，7 MB）。",
   },
   gates: {
     kicker: "规则集",
