@@ -2,9 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Reveal } from "@/components/Reveal";
+import { BrowserJudge } from "@/components/BrowserJudge";
 import { Verifier } from "@/components/Verifier";
 import { getDictionary, isLocale } from "@/lib/i18n";
-import { anchor, roundRaw, sampleReceipts } from "@/lib/round";
+import { anchor, records, roundRaw, sampleReceipts } from "@/lib/round";
 
 export default async function VerifyPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -26,8 +27,17 @@ export default async function VerifyPage({ params }: { params: Promise<{ locale:
         </p>
       </Reveal>
 
+      {/* The whole verifier first, then the three cards that take it apart. A
+          reader who only wants the verdict should not have to assemble it from
+          three interactions to get there. */}
       <Reveal delay={0.06}>
         <div className="mt-10">
+          <BrowserJudge t={t} records={records} roundRaw={roundRaw} anchor={anchor} />
+        </div>
+      </Reveal>
+
+      <Reveal delay={0.1}>
+        <div className="mt-4">
           <Verifier t={t} roundRaw={roundRaw} anchor={anchor} samples={sampleReceipts} />
         </div>
       </Reveal>

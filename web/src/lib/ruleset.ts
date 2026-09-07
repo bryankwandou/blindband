@@ -2,13 +2,25 @@
  * An independent second implementation of the ruleset.
  *
  * The contract in `contract/` is the one that ran inside the enclave. This is a
- * deliberate reimplementation of the same four gates and the same percentile
- * maths, written against `policy.rs` rather than sharing code with it, so that
- * a reader can hold the raw submissions in one hand and the published round in
- * the other and check that one really produces the other.
+ * deliberate reimplementation of the same gates and the same percentile maths,
+ * written against `policy.rs` rather than sharing code with it, so that a reader
+ * can hold the raw submissions in one hand and the published round in the other
+ * and check that one really produces the other.
  *
  * A single implementation checked against itself proves nothing. Two that
  * disagree localise the disagreement to a cell and a field.
+ *
+ * It lives under `web/` and the command-line verifier imports it from here,
+ * which is the opposite of where it started. The site is deployed from `web/`
+ * alone, so a file it reaches out of the repository for does not exist in
+ * production — that mistake broke a deploy once. The agent always runs from a
+ * full checkout, so it is the one that can afford to reach. `judge.ts` was
+ * already reading `web/src/data/round.json` for the same reason.
+ *
+ * One consequence worth stating: the browser and the CLI run these exact bytes.
+ * Not a port of them, not a copy kept in step by a checker. If `npm run judge`
+ * and the verifier on `/verify` ever disagreed, it would be about their inputs,
+ * never about the rules.
  */
 
 /** `model.rs::norm` — lowercase, collapse runs of whitespace. */
@@ -165,4 +177,69 @@ export function aggregate(records: RawRecord[], now: number, rules: Ruleset): Re
   suppressed.sort(byCell);
 
   return { totals, bands, suppressed };
+}
+
+/**
+ * Compare a recomputed round against a published one, field by field.
+ *
+ * Lifted out of `judge.ts` so the browser and the command line reach the same
+ * verdict by the same route. A verifier that agrees with itself in two places
+ * because it is one piece of code is worth more than two that agree today.
+ *
+ * Returns a list of disagreements rather than a boolean. "It does not match" is
+ * not a useful answer to give someone checking a payroll benchmark; "product
+ * designer L4 p50: published 798098, recomputed 798099" is.
+ */
+export function diffRound(mine: Recomputed, theirs: any): string[] {
+  const problems: string[] = [];
+
+  for (const [k, v] of Object.entries(mine.totals)) {
+    if (theirs.totals[k] !== v) {
+      problems.push(`totals.${k}: published ${theirs.totals[k]}, recomputed ${v}`);
+    }
+  }
+  if (mine.bands.length !== theirs.bands.length) {
+    problems.push(`band count: published ${theirs.bands.length}, recomputed ${mine.bands.length}`);
+  }
+
+  for (const band of mine.bands) {
+    const cell = `${band.role} ${band.level}`;
+    const pub = theirs.bands.find(
+      (b: any) => b.role === band.role && b.level === band.level && b.region === band.region,
+    );
+    if (!pub) {
+      problems.push(`${cell}: recomputed as published, but absent from the round`);
+      continue;
+    }
+    for (const [k, v] of Object.entries(band)) {
+      if (pub[k] !== v) problems.push(`${cell} ${k}: published ${pub[k]}, recomputed ${v}`);
+    }
+  }
+
+  for (const s of mine.suppressed) {
+    const cell = `${s.role} ${s.level}`;
+    const pub = theirs.suppressed.find(
+      (x: any) => x.role === s.role && x.level === s.level && x.region === s.region,
+    );
+    if (!pub) {
+      problems.push(`${cell}: recomputed as withheld, but not listed as withheld`);
+      continue;
+    }
+    if (pub.reason !== s.reason) {
+      problems.push(`${cell}: withheld as "${pub.reason}", recomputed as "${s.reason}"`);
+    }
+    if (pub.contributors !== s.contributors) {
+      problems.push(`${cell} contributors: published ${pub.contributors}, recomputed ${s.contributors}`);
+    }
+    if (pub.records !== s.records) {
+      problems.push(`${cell} records: published ${pub.records}, recomputed ${s.records}`);
+    }
+  }
+
+  return problems;
+}
+
+/** Fields compared by `diffRound`, for reporting how much agreed. */
+export function fieldsCompared(mine: Recomputed): number {
+  return mine.bands.length * 13 + mine.suppressed.length * 6 + 6;
 }

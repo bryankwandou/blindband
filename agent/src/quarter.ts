@@ -2,8 +2,8 @@
  * One quarter, one command.
  *
  * ```text
- * npm run quarter -- --round 2026-q2 --data data/q2.json --follows 2026-q1
- * npm run quarter -- --round 2026-q2 --data data/q2.json --follows 2026-q1 --dry-run
+ * npm run quarter -- --round 2026-q2 --data ../web/src/data/q2.json --follows 2026-q1
+ * npm run quarter -- --round 2026-q2 --data ../web/src/data/q2.json --follows 2026-q1 --dry-run
  * ```
  *
  * Running a round was five commands in a fixed order, each with its own
@@ -76,7 +76,7 @@ function parseArgs(argv: string[]): Args {
   }
 
   if (!round) throw new Error("--round is required, e.g. --round 2026-q2");
-  if (!data) throw new Error("--data is required, e.g. --data data/records.json");
+  if (!data) throw new Error("--data is required, e.g. --data ../web/src/data/records.json");
   return { round, data, follows, dryRun };
 }
 
