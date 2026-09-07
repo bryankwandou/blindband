@@ -221,6 +221,18 @@ pub struct PublishedRound {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RoundQuery {
     pub round_id: String,
+    /// The round this one follows, if it follows one.
+    ///
+    /// Gate 5 compares a cell against the same cell in the previous round, and
+    /// the enclave cannot infer which round that was: round ids are labels a
+    /// consortium chooses, not a sequence the contract can count through. So
+    /// the caller names it, and naming nothing means this is the first round —
+    /// which is exactly what the first round is.
+    ///
+    /// `default` rather than required, so a caller written against the earlier
+    /// contract keeps working and gets the behaviour it already had.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub follows: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

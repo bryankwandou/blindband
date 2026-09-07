@@ -501,7 +501,11 @@ are open before anyone's actual payroll should go near it:
    subtracting two published rounds reads it off. `policy::aggregate_with_history`
    republishes a cell only when its contributor set is unchanged or at least
    `MIN_CONTRIBUTOR_CHURN` organisations moved together, and eleven tests in
-   `contract/tests/safe_harbour.rs` hold it to that. `cargo run --example replay
+   `contract/tests/safe_harbour.rs` hold it to that. The contract calls it:
+   `compute-round` takes an optional `follows`, and when a round names its
+   predecessor the enclave reads that round's sealed submissions to build the
+   contributor sets — never the published round, which carries counts and not
+   names on purpose. `cargo run --example replay
    -- --differencing` runs it on the real 117 submissions: it prints the figure
    the first four gates would have leaked about one firm, then withholds the
    cell. What it has not done is decide a real quarter, and it closes the
