@@ -26,6 +26,17 @@
  * What this does not do is decide anything for you. It will not invent a round
  * id, guess which rounds this one follows, or continue past a failed step. Each
  * of those is a decision with consequences a quarter long.
+ *
+ * `--publish-only` drops the last step. Publishing a round costs two contract
+ * executions — one `submit-batch`, one `compute-round` — and `verify` costs
+ * three more for its receipt probes. Those three prove things about a round
+ * that already exists, so they can wait for a balance that does not, and a
+ * tenant one execution short of the full five is not one execution short of a
+ * published round. Anchoring is free of T3N credits either way: it spends
+ * devnet SOL.
+ *
+ * Run `npm run verify` afterwards, when the credits allow. Nothing about the
+ * round changes in between; the probes only ask.
  */
 
 import { spawnSync } from "node:child_process";
@@ -43,6 +54,7 @@ interface Args {
   data: string;
   follows: string[];
   dryRun: boolean;
+  publishOnly: boolean;
 }
 
 function parseArgs(argv: string[]): Args {
@@ -50,6 +62,7 @@ function parseArgs(argv: string[]): Args {
   let data = "";
   const follows: string[] = [];
   let dryRun = false;
+  let publishOnly = false;
 
   const need = (flag: string, value: string | undefined) => {
     if (!value || value.startsWith("--")) throw new Error(`${flag} needs a value`);
@@ -70,6 +83,9 @@ function parseArgs(argv: string[]): Args {
       case "--dry-run":
         dryRun = true;
         break;
+      case "--publish-only":
+        publishOnly = true;
+        break;
       default:
         throw new Error(`unknown option \`${argv[i]}\``);
     }
@@ -77,7 +93,7 @@ function parseArgs(argv: string[]): Args {
 
   if (!round) throw new Error("--round is required, e.g. --round 2026-q2");
   if (!data) throw new Error("--data is required, e.g. --data ../web/src/data/records.json");
-  return { round, data, follows, dryRun };
+  return { round, data, follows, dryRun, publishOnly };
 }
 
 /** One step, named the way the README names it. */
@@ -145,7 +161,7 @@ function plan(a: Args): Step[] {
       executions: 3,
       changesTheWorld: true,
     },
-  ];
+  ].filter((step) => !(a.publishOnly && step.script === "src/verify.ts"));
 }
 
 /**
@@ -296,7 +312,11 @@ try {
       `  --data      the submissions to seal, JSON or CSV\n` +
       `  --follows   a round this contract has already published. Repeat it, oldest\n` +
       `              first, for every earlier round. Gate 5 compares against each.\n` +
-      `  --dry-run   check the key and the credits, print the plan, spend nothing.`,
+      `  --dry-run   check the key and the credits, print the plan, spend nothing.
+` +
+      `  --publish-only  stop after anchoring. Publishing costs two executions;
+` +
+      `              verify's three receipt probes can wait for a later balance.`,
   );
   process.exit(1);
 }
