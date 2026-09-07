@@ -30,6 +30,13 @@
 
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
+import "dotenv/config";
+
+import { callerKey } from "./lib/invoke.js";
+import { connect, creditsAvailable, formatCredits } from "./lib/session.js";
+
+/** What one contract execution locks, per the node's credit model. */
+const EXECUTION_LOCK = 10_000_000_000;
 
 interface Args {
   round: string;
@@ -112,7 +119,57 @@ function run(step: Step): number {
   return result.status ?? 1;
 }
 
-function main() {
+/**
+ * Refuse a quarter this balance cannot finish.
+ *
+ * Each step here locks a full execution, and the sequence is not divisible:
+ * `submit` writes rows into the sealed ledger, and if the credits run out
+ * before `compute-round`, those rows sit there belonging to a round that was
+ * never published. The ledger cannot be rolled back, so the second-worst
+ * outcome — starting and stopping halfway — is reachable from a balance that
+ * looks almost sufficient.
+ *
+ * So the balance is checked once, up front, against the whole plan. Better to
+ * refuse a quarter than to half-run one.
+ */
+async function affordable(steps: Step[]): Promise<{ ok: boolean; message: string }> {
+  const executions = steps.filter((s) => s.spends).length;
+  const needed = executions * EXECUTION_LOCK;
+
+  const { apiKey, who } = callerKey();
+  const session = await connect(apiKey, who);
+  const credits = await creditsAvailable(session);
+
+  if (credits === null) {
+    return {
+      ok: true,
+      message: `credits      : the node did not report a balance. Proceeding — it will\n` +
+        `               refuse the first step itself if there is nothing to spend.`,
+    };
+  }
+
+  const affords = Math.floor(credits / EXECUTION_LOCK);
+  const line =
+    `credits      : ${formatCredits(credits)} — about ${affords} execution` +
+    `${affords === 1 ? "" : "s"}, and this quarter needs ${executions}`;
+
+  if (credits >= needed) return { ok: true, message: line };
+
+  return {
+    ok: false,
+    message:
+      `${line}\n\n` +
+      `quarter: not enough credits to finish, so nothing has been started.\n\n` +
+      `This is deliberate. Running out after \`submit\` would leave the rows for\n` +
+      `this round sealed in the ledger with no published round to account for\n` +
+      `them, and the ledger does not roll back. A refused quarter costs nothing;\n` +
+      `a half-run one cannot be undone.\n\n` +
+      `Top up the tenant, or run the steps by hand once you can cover all\n` +
+      `${executions} of them.`,
+  };
+}
+
+async function main() {
   const a = parseArgs(process.argv.slice(2));
 
   if (!existsSync(a.data)) {
@@ -135,7 +192,17 @@ function main() {
         `               --follows or the round goes out under four gates instead of five.`,
     );
   }
-  console.log(a.dryRun ? `mode         : dry run — nothing will be spent\n` : `\n`);
+  if (a.dryRun) console.log(`mode         : dry run — nothing will be spent`);
+
+  const budget = await affordable(steps);
+  console.log(budget.message + `\n`);
+
+  // A dry run is allowed to report an unaffordable plan and stop cleanly:
+  // knowing the quarter cannot be paid for is the answer it was asked for.
+  if (!budget.ok) {
+    console.error(a.dryRun ? `Dry run complete.` : ``);
+    process.exit(a.dryRun ? 0 : 1);
+  }
 
   for (const [i, step] of steps.entries()) {
     const label = `${i + 1}/${steps.length}  ${step.what}`;
@@ -170,7 +237,7 @@ function main() {
 }
 
 try {
-  main();
+  await main();
 } catch (err) {
   console.error(`quarter: ${err instanceof Error ? err.message : String(err)}\n`);
   console.error(

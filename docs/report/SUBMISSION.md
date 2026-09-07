@@ -583,7 +583,12 @@ are open before anyone's actual payroll should go near it:
    published in, not merely the one before: withhold a cell in Q2, republish
    it in Q3 with one firm fewer than Q1 had, and no adjacent pair catches it
    while Q3 − Q1 still names that firm. What it has not done is decide a real
-   quarter, because there has only been one.
+   quarter, because there has only been one. The tenant holds 10,352,414,086 base units
+   and each execution locks 10,000,000,000, so a second round — submit,
+   compute, verify — cannot be paid for. `npm run quarter` now checks that
+   before it starts anything, because running out after `submit` would seal
+   rows into the ledger belonging to a round that was never published, and
+   the ledger does not roll back.
 
 And BB-02 means attestation is currently unverifiable against the sandbox node.
 That is a platform issue, but it is a load-bearing one for this product, so it
