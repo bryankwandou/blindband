@@ -35,7 +35,7 @@ did:t3n:efd91540b28ceaccc876f9d1603d3f7f0d91d64d
 ```
 I'd like to keep running it.
 
-The engineering is done and honest — the work left is signing up the first five firms and finding out where the four gates are wrong in practice, which needs an operator rather than a maintainer.
+The engineering is done and honest — the work left is signing up the first five firms and finding out where the gates are wrong in practice, which needs an operator rather than a maintainer.
 
 If you'd rather host it, the handover is small: contract, agent and site are one self-contained repository, `npm run deploy` is idempotent and reconciles the map ACLs on every run, and the only state outside git is the tenant DID, the contract ids and the map names — all in agent/state.json and reproducible with a single deploy. Re-pointing at a different tenant is two environment variables.
 
@@ -58,7 +58,7 @@ Static mirror of the same commit: https://bryankwandou.github.io/blindband
 Anchored round: devnet slot 492821211, digest e4f528ad…a2f40beef
 
 WHAT IT IS
-A consortium of firms wants to know what the market pays for a role. None will hand its payroll to a competitor, and none may lawfully swap current pay figures directly. Blindband seals the rows into a Rust WASM contract inside a TEE, aggregates there, and publishes a cell only if it clears four gates drawn from antitrust safe-harbour guidance: a neutral aggregator, data at least 91 days old, at least 5 firms and 10 rows per cell, and no firm above 25% of a cell. The round is then SHA-256'd and the digest anchored on Solana devnet, so a round cannot be quietly swapped for a friendlier one after the fact.
+A consortium of firms wants to know what the market pays for a role. None will hand its payroll to a competitor, and none may lawfully swap current pay figures directly. Blindband seals the rows into a Rust WASM contract inside a TEE, aggregates there, and publishes a cell only if it clears the gates drawn from antitrust safe-harbour guidance: a neutral aggregator, data at least 91 days old, at least 5 firms and 10 rows per cell, no firm above 25% of a cell, and — from the second round on — no change that a single firm's arrival or departure could explain. The round is then SHA-256'd and the digest anchored on Solana devnet, so a round cannot be quietly swapped for a friendlier one after the fact.
 
 WHAT ACTUALLY RAN
 Round 2026-q1 on the sandbox, 4 September 2026. 117 rows from 9 firms in a single execution. 4 cells published, 2 withheld — and the two failed on different gates. Both had enough data to compute; the enclave computed them and then declined to emit the numbers.
@@ -72,7 +72,7 @@ Four checks, no key, no credits, no account: the bands recomputed from the raw s
 AND YOU CAN WATCH THE GATE THAT PROTECTS THE SECOND ROUND
   cargo run --example replay -- --differencing
 
-The first four gates each judge one round alone, and a consortium runs quarterly. This takes the real 117 submissions, removes one firm from one role, and shows the first four gates publishing a median $21.83 lower — a difference computed from that firm's rows and nothing else, readable by anyone holding both rounds. Then it runs the same round through gate 5, which withholds the cell. 27 tests in contract/tests/safe_harbour.rs hold it to that, including one asserting the anchored round is byte-identical with the gate added.
+The first four gates each judge one round alone, and a consortium runs quarterly. This takes the real 117 submissions, removes one firm from one role, and shows the first four gates publishing a median $21.83 lower — a difference computed from that firm's rows and nothing else, readable by anyone holding both rounds. Then it runs the same round through gate 5, which withholds the cell. It compares against every round a cell was published in, not merely the one before — withhold a cell in Q2, republish it in Q3 with one firm fewer than Q1 had, and no adjacent pair catches it while Q3 - Q1 still names that firm. 30 tests in contract/tests/safe_harbour.rs hold it to that, including one asserting the anchored round is byte-identical with the gate added.
 
 AND YOU CAN RUN IT, NOT JUST AUDIT IT
   cargo run --example replay -- your-payroll.csv
@@ -88,7 +88,7 @@ The six that are mine are in the same list at the same weight. Two were found by
 WHAT IS NOT DONE, STATED PLAINLY
 1. It runs on a sandbox tenant with test credits.
 2. Rounds execute under the tenant identity, not a delegated agent key. The agent reports which identity ran a round rather than pretending it was the agent. `npm run probe:agent` asks the platform that question in one call and creates nothing, so you can check your own tier rather than taking my word for it.
-3. Gate 5 is written and tested, but it has never decided a live round, because there has only been one. It also closes the attack against the immediately preceding round only — a patient observer holding four quarters can still difference across a gap it does not look at. The published round carries blindband-safe-harbour/v1 because it was the first and had nothing behind it; the next carries v2.
+3. Gate 5 is written, tested and reachable from the contract, but it has never decided a live round, because there has only been one. One limit remains and it is small: withholding a cell is itself a signal that one organisation moved, which is far less than the numbers it protects. The published round carries blindband-safe-harbour/v1 because it was the first and had nothing behind it; the next carries v2.
 
 BB-02 also means attestation cannot currently be verified against the sandbox node, and every run prints that warning rather than hiding it. The first two are not fixable from my side, and none of the three is buried in the report.
 
