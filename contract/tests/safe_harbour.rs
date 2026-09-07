@@ -321,17 +321,33 @@ fn commitments_are_unique_per_row_and_stable_per_input() {
 use std::collections::{BTreeMap, BTreeSet};
 use z_blindband::policy::{PriorCell, PriorRound};
 
-/// The cell `healthy_cell()` produces, as the previous round saw it.
-fn prior_with(contributors: &[&str], published: bool) -> PriorRound {
+/// The cell `healthy_cell()` produces, as earlier rounds published it.
+///
+/// One slice per round in which the cell was published, oldest first. A round
+/// where the cell was withheld contributes nothing, because nothing was emitted
+/// then for anyone to subtract from — which is why `published: false` used to
+/// be a field here and is now simply an absent entry.
+fn prior_rounds(rounds: &[&[&str]]) -> PriorRound {
     let mut prior: PriorRound = BTreeMap::new();
     prior.insert(
         "backend engineer|l5|sea".to_string(),
         PriorCell {
-            contributors: contributors.iter().map(|c| c.to_string()).collect(),
-            published,
+            published_as: rounds
+                .iter()
+                .map(|r| r.iter().map(|c| c.to_string()).collect())
+                .collect(),
         },
     );
     prior
+}
+
+/// The common case: one earlier round, published.
+fn prior_with(contributors: &[&str], published: bool) -> PriorRound {
+    if published {
+        prior_rounds(&[contributors])
+    } else {
+        prior_rounds(&[])
+    }
 }
 
 const SIX: [&str; 6] = ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot"];
@@ -469,4 +485,46 @@ fn a_prior_cell_holds_a_set_so_duplicate_rows_cannot_inflate_churn() {
         .map(|r| r.contributor.clone())
         .collect();
     assert_eq!(set.len(), 6);
+}
+
+#[test]
+fn the_gap_attack_is_closed_by_comparing_against_every_earlier_round() {
+    // Q1 published six firms. Q2 withheld the cell, so there is no adjacent
+    // pair to compare Q3 against — and Q3 has one firm fewer than Q1 had.
+    // A gate that only looked at the round before would publish this, and
+    // Q3 − Q1 would name the firm that left.
+    let prior = prior_rounds(&[&[
+        "alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf",
+    ]]);
+    let round = policy::aggregate_with_history("2026-q3", healthy_cell(), NOW, Some(&prior));
+
+    assert_eq!(round.bands.len(), 0, "Q3 - Q1 is still a subtraction");
+    assert_eq!(round.suppressed[0].reason, REASON_CHURN);
+}
+
+#[test]
+fn a_cell_safe_against_the_last_round_but_not_against_an_older_one_is_withheld() {
+    // Against Q2 the churn is two and unremarkable. Against Q1 it is one.
+    // The observer holds both, so the gate has to as well.
+    let q1: &[&str] = &["alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf"];
+    let q2: &[&str] = &["alpha", "bravo", "charlie", "delta", "hotel"];
+    let prior = prior_rounds(&[q1, q2]);
+
+    let round = policy::aggregate_with_history("2026-q3", healthy_cell(), NOW, Some(&prior));
+    assert_eq!(round.bands.len(), 0);
+    assert_eq!(round.suppressed[0].reason, REASON_CHURN);
+}
+
+#[test]
+fn matching_an_older_round_exactly_is_safe_even_after_the_set_moved_and_came_back() {
+    // Q1 and Q3 have the same six firms; Q2 had two more. Churn is zero
+    // against Q1 and two against Q2, so nothing is attributable to one firm.
+    let six: &[&str] = &["alpha", "bravo", "charlie", "delta", "echo", "foxtrot"];
+    let eight: &[&str] = &[
+        "alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel",
+    ];
+    let prior = prior_rounds(&[six, eight]);
+
+    let round = policy::aggregate_with_history("2026-q3", healthy_cell(), NOW, Some(&prior));
+    assert_eq!(round.bands.len(), 1);
 }

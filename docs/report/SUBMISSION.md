@@ -508,9 +508,11 @@ are open before anyone's actual payroll should go near it:
    names on purpose. `cargo run --example replay
    -- --differencing` runs it on the real 117 submissions: it prints the figure
    the first four gates would have leaked about one firm, then withholds the
-   cell. What it has not done is decide a real quarter, and it closes the
-   attack against the previous round only — a patient observer holding four
-   quarters can still difference across a gap this does not look at.
+   cell. It compares a cell against every round that cell was
+   published in, not merely the one before: withhold a cell in Q2, republish
+   it in Q3 with one firm fewer than Q1 had, and no adjacent pair catches it
+   while Q3 − Q1 still names that firm. What it has not done is decide a real
+   quarter, because there has only been one.
 
 And BB-02 means attestation is currently unverifiable against the sandbox node.
 That is a platform issue, but it is a load-bearing one for this product, so it
