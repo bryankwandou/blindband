@@ -87,7 +87,7 @@ export interface Dictionary {
     kicker: string;
     title: string;
     lede: string;
-    items: [Gate, Gate, Gate, Gate];
+    items: [Gate, Gate, Gate, Gate, Gate];
     note: string;
   };
   round: {
@@ -235,7 +235,7 @@ const en: Dictionary = {
   },
   gates: {
     kicker: "The ruleset",
-    title: "Four gates, applied before anything leaves the enclave.",
+    title: "Four gates on the first round. Five on every round after it.",
     lede:
       "These are not tuning knobs. They are compiled into the contract and named in the published round, so a member can see which ruleset produced the number they are reading.",
     items: [
@@ -262,6 +262,12 @@ const en: Dictionary = {
         rule: "no firm above 25% of a cell",
         body:
           "A band that is mostly one employer is that employer's payroll wearing a market's clothes. Over the ceiling, the cell is withheld.",
+      },
+      {
+        name: "Differencing guard",
+        rule: "no delta attributable to one firm",
+        body:
+          "The four gates above each judge a single round, and a consortium runs every quarter. If one firm joins or leaves a cell, the change in that cell's median was computed from its rows alone — subtract two rounds and you have read it. A published cell is published again only if its contributor set is unchanged, or if at least two firms moved at once. The round on this page was the first, so it had nothing behind it to be differenced against; every round after it faces this gate too.",
       },
     ],
     note:
@@ -476,7 +482,7 @@ const id: Dictionary = {
   },
   gates: {
     kicker: "Aturan main",
-    title: "Empat gerbang, diterapkan sebelum apa pun keluar dari enclave.",
+    title: "Empat gerbang di ronde pertama. Lima di setiap ronde sesudahnya.",
     lede:
       "Ini bukan tombol yang bisa diputar sesuka hati. Semuanya dikompilasi ke dalam kontrak dan disebutkan di ronde yang terbit, sehingga anggota tahu ruleset mana yang menghasilkan angka yang sedang mereka baca.",
     items: [
@@ -497,6 +503,12 @@ const id: Dictionary = {
         rule: "minimal 5 perusahaan dan 10 baris per sel",
         body:
           "Di bawah itu, sebuah band mulai menggambarkan individu alih-alih pasar. Selnya disebut sebagai ditahan dan statistiknya dibuang.",
+      },
+      {
+        name: "Penjaga differencing",
+        rule: "tak ada selisih yang bisa diatributkan ke satu firma",
+        body:
+          "Keempat gerbang lain menilai satu ronde saja, padahal konsorsium berjalan tiap kuartal. Kalau satu perusahaan masuk atau keluar dari sebuah sel, perubahan median sel itu berasal dari barisnya sendiri — kurangkan dua ronde dan angkanya terbaca. Sel yang pernah terbit hanya terbit lagi bila susunan penyumbangnya tidak berubah, atau bila sedikitnya dua firma berpindah sekaligus. Ronde di halaman ini adalah yang pertama, jadi tidak ada apa pun di belakangnya untuk dibandingkan; setiap ronde sesudahnya menghadapi gerbang ini juga.",
       },
       {
         name: "Batas atas konsentrasi",
@@ -717,7 +729,7 @@ const zh: Dictionary = {
   },
   gates: {
     kicker: "规则集",
-    title: "四道门槛，在任何数据离开飞地之前生效。",
+    title: "第一轮四道门槛，之后每一轮五道。",
     lede:
       "它们不是可随手调节的旋钮，而是编译进合约、并写在已发布轮次里的常量，成员因此能看清自己读到的数字出自哪一套规则。",
     items: [
@@ -736,6 +748,12 @@ const zh: Dictionary = {
         name: "参与方下限",
         rule: "每个单元至少 5 家企业、10 行数据",
         body: "低于此线，区间描述的就是个人而非市场。该单元会被标记为扣下，其统计量随即丢弃。",
+      },
+      {
+        name: "差分防护",
+        rule: "任何差值都不可归因到单一企业",
+        body:
+          "另外四道门槛只判定单轮，而联盟按季度运行。若一家企业加入或退出某个单元，该单元中位数的变化就完全来自它自己的数据行——把两轮相减便可读出。已发布过的单元只有在贡献方集合未变，或至少两家企业同时变动时，才会再次发布。本页这一轮是第一轮，身后无物可供差分；其后每一轮都要再过这道门槛。",
       },
       {
         name: "集中度上限",
