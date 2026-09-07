@@ -1,9 +1,7 @@
 # The submission form, field by field
 
-Copy each block into the field above it. Two blocks have a placeholder that only
-you can fill: the Google Doc link and the tweet link.
-
----
+Every field below is final — the Google Doc and the tweet both exist, so there
+are no placeholders left to fill. Copy each block into the field above it.
 
 ## Your Submission
 
@@ -13,12 +11,11 @@ https://blindband.vercel.app
 
 ## Tweet Link
 
-Post the six-tweet thread in `SUBMIT.md` §7 first, then paste the URL of tweet 1
-here. The field is optional — the brief lists social sharing as a bonus and the
-form says you may ignore it — but the thread is written and the bonus is free.
+The `?s=20` that X appends when you copy a link is a tracking parameter. The
+link works either way; without it, it is just the link.
 
 ```
-<URL of tweet 1>
+https://x.com/nayrbryanGaming/status/2096951229750645097
 ```
 
 ## Email address
@@ -47,10 +44,14 @@ Happy to talk about the startup programme and the listing page.
 
 ## Anything Else?
 
+Paste the whole block. The Google Doc link belongs on the `Report` line rather
+than on a line of its own above the text: a reader looking for the report looks
+where the text says the report is.
+
 ```
 Blindband — confidential pay benchmarking inside a Terminal 3 TEE, anchored on Solana.
 
-Report (public Google Doc): <PASTE THE GOOGLE DOC LINK>
+Report (public Google Doc): https://docs.google.com/document/d/194ju4-GlGDcRc5ncdPoaIxPiGunPCsrXYmRuRp6ZW-0/edit?usp=sharing
 Source, MIT: https://github.com/bryankwandou/blindband
 Demo video, 63 s, silent, captioned: https://blindband.vercel.app/demo/blindband-demo.mp4
 Static mirror of the same commit: https://bryankwandou.github.io/blindband
@@ -88,3 +89,35 @@ BB-02 also means attestation cannot currently be verified against the sandbox no
 
 The site is in English, Bahasa Indonesia and 中文, with light and dark themes, and the verifier on /verify recomputes the digest in your own browser.
 ```
+
+## Two replies to fix on the posted thread
+
+The thread as posted carries two replies from an older draft, and they
+contradict both the site and this form: they say eight bug write-ups where
+there are twelve, and 8/8 where `npm run judge` prints 4/4. For a project whose
+whole claim is that its numbers can be checked by a stranger, a number that
+disagrees with itself is the expensive kind of mistake.
+
+Delete the reply beginning "Anyone can check the round without asking me" and
+post this in its place:
+
+```
+Anyone can check the round without asking me for anything.
+
+git clone, then one command: the bands recomputed from the raw rows by a second implementation, the digest rehashed, the digest read off devnet, and two tampered inputs that must be rejected.
+
+4/4.
+```
+
+Delete the reply beginning "Eight bug write-ups ship with it" and post this:
+
+```
+Twelve bug write-ups ship with it, six platform and six mine.
+
+Two of mine I found by cloning my own public repo and running it as a stranger: a committed state file and a gitignored sample dataset meant the quickstart worked for nobody but me.
+```
+
+Do not delete the first tweet. Its URL is the one in the Tweet Link field
+above, and deleting it turns that field into a dead link — worse than a stale
+reply left standing. The duplicate single-tweet version that went out twice on
+the timeline can go.

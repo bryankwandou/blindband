@@ -35,12 +35,15 @@
 //! `effective_at` is Unix seconds — the date the pay was effective, which is
 //! what gate 1 tests.
 
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::process::ExitCode;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use z_blindband::model::{Record, SubmitReq, MIN_DATA_AGE_SECS};
-use z_blindband::policy::{aggregate, commit, round_digest};
+use z_blindband::model::{Record, Round, SubmitReq, MIN_DATA_AGE_SECS};
+use z_blindband::policy::{
+    aggregate, aggregate_with_history, commit, round_digest, PriorCell, PriorRound,
+};
 
 /// The round this repository published, and the digest sitting on devnet.
 const PUBLISHED_ROUND: &str = "2026-q1";
@@ -59,6 +62,7 @@ struct Args {
     round_id: String,
     now: Option<u64>,
     expect: Option<String>,
+    differencing: bool,
 }
 
 fn main() -> ExitCode {
@@ -140,6 +144,12 @@ fn main() -> ExitCode {
 
     let round_id = args.round_id;
     let now = args.now.unwrap_or_else(now);
+
+    if args.differencing {
+        println!("input        : {path} — {} rows", records.len());
+        println!("commitments  : {}", if exact { "from the real submission receipts" } else { "minted fresh" });
+        return demonstrate_differencing(&records, now);
+    }
 
     println!("input        : {path} — {} rows", records.len());
     println!("round        : {round_id}");
@@ -312,12 +322,156 @@ fn parse_csv(raw: &str) -> Result<Vec<SubmitReq>, String> {
     Ok(out)
 }
 
+/// Rebuild the published round, then show what a second round would give away.
+///
+/// The point of gate 5 is hard to take on faith and easy to show. This runs the
+/// real 117 submissions twice: once as the round that was published, and once
+/// as a following quarter in which exactly one firm stopped reporting one role.
+/// Nothing else changes — same firms, same rows, same maths.
+///
+/// Under the first four gates alone, that second round publishes a cell. Put
+/// the two published cells side by side, subtract, and the difference was
+/// computed from the departing firm's rows and nothing else. The figure printed
+/// below is what an observer holding both rounds would learn about one company,
+/// from two documents that each passed every gate on its own.
+///
+/// Then the same second round is run with the fifth gate, and the cell is
+/// withheld.
+fn demonstrate_differencing(records: &[Record], now: u64) -> ExitCode {
+    let first = aggregate(PUBLISHED_ROUND, records.to_vec(), now);
+
+    let Some(target) = first.bands.first().cloned() else {
+        eprintln!("The first round published nothing, so there is nothing to difference.");
+        return ExitCode::FAILURE;
+    };
+    let key = format!("{}|{}|{}", target.role, target.level, target.region);
+    let cell = format!("{} {}", target.role, target.level);
+
+    // Whoever contributed fewest rows to that cell. The smallest participant
+    // makes the point better than the largest: the leak does not need a firm to
+    // dominate anything, only to move.
+    let mut rows_per_firm: BTreeMap<&str, usize> = BTreeMap::new();
+    for r in records.iter().filter(|r| r.cell_key() == key) {
+        *rows_per_firm.entry(r.contributor.as_str()).or_insert(0) += 1;
+    }
+    let Some((leaver, leaver_rows)) = rows_per_firm.iter().min_by_key(|(_, n)| **n) else {
+        eprintln!("No contributors in the published cell.");
+        return ExitCode::FAILURE;
+    };
+    let (leaver, leaver_rows) = (leaver.to_string(), *leaver_rows);
+
+    let next: Vec<Record> = records
+        .iter()
+        .filter(|r| !(r.cell_key() == key && r.contributor == leaver))
+        .cloned()
+        .collect();
+
+    let prior = prior_from(records, &first);
+    let ungated = aggregate("2026-q2", next.clone(), now);
+    let gated = aggregate_with_history("2026-q2", next, now, Some(&prior));
+
+    println!();
+    println!("ROUND ONE — as published, {} ({})", first.round_id, first.ruleset);
+    println!(
+        "  {cell}: median {}, {} firms, {} rows",
+        money(target.p50),
+        target.contributors,
+        target.records
+    );
+    println!();
+    println!("ROUND TWO — {leaver} stops reporting this role. {leaver_rows} rows fewer, nothing else changed.");
+
+    let Some(after) = ungated
+        .bands
+        .iter()
+        .find(|b| b.role == target.role && b.level == target.level && b.region == target.region)
+    else {
+        println!("  Under four gates the cell no longer publishes, so this run shows nothing.");
+        return ExitCode::SUCCESS;
+    };
+
+    println!(
+        "  Under the first four gates: median {}, {} firms, {} rows — published.",
+        money(after.p50),
+        after.contributors,
+        after.records
+    );
+    println!();
+
+    let (delta, direction) = if after.p50 >= target.p50 {
+        (after.p50 - target.p50, "higher")
+    } else {
+        (target.p50 - after.p50, "lower")
+    };
+    println!("WHAT THAT GIVES AWAY");
+    println!(
+        "  Subtract the two published medians: {} {direction}.",
+        money(delta)
+    );
+    println!("  Both rounds cleared every gate. Neither leaked anything on its own.");
+    println!("  But the only thing that changed between them is {leaver}'s rows, so that");
+    println!("  movement is {leaver}'s and can be read off by anyone holding both rounds.");
+    println!();
+
+    let withheld = gated
+        .suppressed
+        .iter()
+        .find(|s| s.role == target.role && s.level == target.level && s.region == target.region);
+
+    match withheld {
+        Some(s) => {
+            println!("ROUND TWO, WITH GATE 5 — {}", gated.ruleset);
+            println!("  {cell}: withheld, {}", s.reason);
+            println!(
+                "  It cleared the first four gates on {} firms and {} rows. It is held back",
+                s.contributors, s.records
+            );
+            println!("  because one organisation moved, and one is a number you can subtract.");
+            println!();
+            println!("[  ok  ] the fifth gate refused a cell the first four would have published.");
+            ExitCode::SUCCESS
+        }
+        None => {
+            println!("[ FAIL ] gate 5 published {cell} even though a single firm moved.");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+/// The previous round as gate 5 needs to see it: who was in each cell, and
+/// whether that cell was published.
+///
+/// Built from the raw submissions, never from the published round — a round
+/// that named its contributors per cell would hand over the very map the gates
+/// exist to protect. Inside the enclave this is read from the sealed
+/// submissions of the previous round; here it is read from the same file this
+/// example already has open.
+fn prior_from(records: &[Record], round: &Round) -> PriorRound {
+    let published: BTreeSet<String> = round
+        .bands
+        .iter()
+        .map(|b| format!("{}|{}|{}", b.role, b.level, b.region))
+        .collect();
+
+    let mut prior: PriorRound = PriorRound::new();
+    for r in records {
+        let key = r.cell_key();
+        let entry = prior.entry(key.clone()).or_insert_with(|| PriorCell {
+            contributors: BTreeSet::new(),
+            published: published.contains(&key),
+        });
+        entry.contributors.insert(r.contributor.clone());
+    }
+    prior
+}
+
 fn parse_args() -> Result<Args, String> {
     let mut input = None;
     let mut receipts = None;
     let mut round_id = None;
     let mut now = None;
     let mut expect = None;
+    let mut differencing = false;
 
     let mut it = std::env::args().skip(1);
     while let Some(a) = it.next() {
@@ -330,6 +484,14 @@ fn parse_args() -> Result<Args, String> {
                 round_id.get_or_insert_with(|| PUBLISHED_ROUND.to_string());
                 now.get_or_insert(PUBLISHED_GENERATED_AT);
                 expect.get_or_insert_with(|| PUBLISHED_DIGEST.to_string());
+            }
+            // Same inputs as --replay, but the question is what a *second*
+            // round would give away rather than what the first one hashed to.
+            "--differencing" => {
+                differencing = true;
+                input.get_or_insert_with(|| "../agent/data/records.json".to_string());
+                receipts.get_or_insert_with(|| "../agent/data/receipts.json".to_string());
+                now.get_or_insert(PUBLISHED_GENERATED_AT);
             }
             "--receipts" => receipts = Some(it.next().ok_or("--receipts needs a path")?),
             "--round-id" => round_id = Some(it.next().ok_or("--round-id needs a value")?),
@@ -352,6 +514,7 @@ fn parse_args() -> Result<Args, String> {
         round_id: round_id.unwrap_or_else(|| "local".to_string()),
         now,
         expect,
+        differencing,
     })
 }
 
