@@ -36,7 +36,7 @@ interface BatchResult {
 }
 
 async function main() {
-  const path = process.argv[2] ?? "data/records.json";
+  const path = process.argv[2] ?? "../web/src/data/records.json";
   const rows = JSON.parse(readFileSync(resolve(path), "utf8")) as SubmitRow[];
 
   if (!Array.isArray(rows) || rows.length === 0) {

@@ -104,6 +104,23 @@ export interface Dictionary {
     reasons: Record<string, string>;
     open: string;
   };
+  judge: {
+    kicker: string;
+    title: string;
+    lede: string;
+    run: string;
+    running: string;
+    verdict: string;
+    checks: { recompute: string; digest: string; chain: string; controls: string };
+    detail: {
+      recompute: string;
+      digest: string;
+      chain: string;
+      chainMismatch: string;
+      chainOffline: string;
+      controls: string;
+    };
+  };
   verify: {
     kicker: string;
     title: string;
@@ -293,6 +310,29 @@ const en: Dictionary = {
       below_record_floor: "Fewer than ten rows landed in this cell.",
     },
     open: "Open the full round",
+  },
+  judge: {
+    kicker: "No install, no account",
+    title: "Run the same four checks here.",
+    lede:
+      "These are the checks `npm run judge` runs, and this page runs the same ruleset file the command line does — not a port of it. Three of the four need no network at all: the bands are recomputed from the raw submissions in your browser, the digest is rehashed from the published bytes, and two deliberately tampered inputs are put through to confirm this can say no. The third reads the digest back off Solana devnet through a public endpoint we do not run.",
+    run: "Run the four checks",
+    running: "Checking…",
+    verdict: "{passed}/{total} checks passed, in your browser, on bytes you downloaded.",
+    checks: {
+      recompute: "The gates and the maths, recomputed from the raw submissions",
+      digest: "The digest, recomputed from the published bytes",
+      chain: "The digest, read back off Solana devnet",
+      controls: "The negative controls — a verifier that can say no",
+    },
+    detail: {
+      recompute: "{fields} fields agree — {published} cells published, {withheld} withheld",
+      digest: "{bytes} bytes hashed → {digest} — the digest the enclave attested",
+      chain: "the memo at slot {slot} carries this digest for round {round}, written before you asked",
+      chainMismatch: "the transaction carries a different digest",
+      chainOffline: "could not reach the public RPC endpoint. This check needs the network; the other three do not.",
+      controls: "one median raised by $0.01 → {digest}, rejected · one salary raised by $1.00 → recomputation diverges, rejected",
+    },
   },
   verify: {
     kicker: "Verification",
@@ -541,6 +581,29 @@ const id: Dictionary = {
     },
     open: "Buka ronde lengkap",
   },
+  judge: {
+    kicker: "Tanpa instal, tanpa akun",
+    title: "Jalankan keempat pemeriksaan yang sama di sini.",
+    lede:
+      "Ini pemeriksaan yang dijalankan `npm run judge`, dan halaman ini memakai berkas aturan yang sama persis dengan yang dipakai baris perintah — bukan salinannya. Tiga dari empat sama sekali tidak butuh jaringan: band dihitung ulang dari kiriman mentah di peramban Anda, digest dihitung ulang dari byte yang terbit, dan dua masukan yang sengaja dirusak dilewatkan untuk memastikan alat ini bisa berkata tidak. Yang ketiga membaca digest kembali dari Solana devnet lewat endpoint publik yang bukan milik kami.",
+    run: "Jalankan keempat pemeriksaan",
+    running: "Memeriksa…",
+    verdict: "{passed}/{total} pemeriksaan lolos, di peramban Anda, atas byte yang Anda unduh sendiri.",
+    checks: {
+      recompute: "Gerbang dan hitungannya, dihitung ulang dari kiriman mentah",
+      digest: "Digest, dihitung ulang dari byte yang terbit",
+      chain: "Digest, dibaca kembali dari Solana devnet",
+      controls: "Kontrol negatif — verifikator yang sanggup berkata tidak",
+    },
+    detail: {
+      recompute: "{fields} field cocok — {published} sel terbit, {withheld} ditahan",
+      digest: "{bytes} byte di-hash → {digest} — digest yang diatestasi enclave",
+      chain: "memo di slot {slot} membawa digest ini untuk ronde {round}, ditulis sebelum Anda bertanya",
+      chainMismatch: "transaksinya membawa digest yang berbeda",
+      chainOffline: "tidak bisa mencapai endpoint RPC publik. Pemeriksaan ini butuh jaringan; tiga lainnya tidak.",
+      controls: "satu median dinaikkan $0,01 → {digest}, ditolak · satu gaji dinaikkan $1,00 → perhitungan ulang menyimpang, ditolak",
+    },
+  },
   verify: {
     kicker: "Verifikasi",
     title: "Periksa di sini, di peramban Anda sendiri.",
@@ -783,6 +846,29 @@ const zh: Dictionary = {
       below_record_floor: "落入该单元的数据不足十行。",
     },
     open: "查看完整轮次",
+  },
+  judge: {
+    kicker: "无需安装，无需账号",
+    title: "在这里运行同样的四项检查。",
+    lede:
+      "这就是 `npm run judge` 所做的检查，而且本页加载的是与命令行完全相同的规则文件，不是它的移植版。四项中有三项完全不需要网络：区间在你的浏览器里从原始提交重新算出，摘要从已发布的字节重新哈希，另有两份被故意篡改的输入用来确认这套工具会说“不”。第三项通过我们并不运营的公共端点，把摘要从 Solana devnet 上读回来。",
+    run: "运行四项检查",
+    running: "检查中…",
+    verdict: "{passed}/{total} 项通过——在你的浏览器里，基于你自己下载的字节。",
+    checks: {
+      recompute: "门槛与算法，从原始提交重新计算",
+      digest: "摘要，从已发布的字节重新计算",
+      chain: "摘要，从 Solana devnet 读回",
+      controls: "反向对照——一个会说“不”的验证器",
+    },
+    detail: {
+      recompute: "{fields} 个字段一致——{published} 个单元发布，{withheld} 个扣下",
+      digest: "已哈希 {bytes} 字节 → {digest}——飞地所证实的摘要",
+      chain: "slot {slot} 上的 memo 为第 {round} 轮记录了该摘要，写在你提问之前",
+      chainMismatch: "该交易携带的摘要并不相同",
+      chainOffline: "无法连接公共 RPC 端点。此项需要网络，其余三项不需要。",
+      controls: "某个中位数上调 $0.01 → {digest}，被拒 · 某笔薪酬上调 $1.00 → 重算结果发散，被拒",
+    },
   },
   verify: {
     kicker: "验证",

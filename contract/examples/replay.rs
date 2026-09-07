@@ -14,7 +14,7 @@
 //!
 //! So two different people can do two different things with this:
 //!
-//! * `--replay` rebuilds the published round from `agent/data/records.json`
+//! * `--replay` rebuilds the published round from `web/src/data/records.json`
 //!   and `agent/data/receipts.json` and prints its digest. If that digest is
 //!   `e4f528ad…beef`, the round anchored on Solana devnet is one this machine
 //!   just derived from the inputs, with nothing of ours in the loop.
@@ -75,7 +75,7 @@ fn main() -> ExitCode {
         }
     };
 
-    let path = args.input.unwrap_or_else(|| "../agent/data/records.json".into());
+    let path = args.input.unwrap_or_else(|| "../web/src/data/records.json".into());
     let raw = match fs::read_to_string(&path) {
         Ok(s) => s,
         Err(e) => {
@@ -490,7 +490,7 @@ fn parse_args() -> Result<Args, String> {
             // The published round, rebuilt exactly: the inputs, the receipts,
             // the timestamp it was generated at, and the digest to beat.
             "--replay" => {
-                input.get_or_insert_with(|| "../agent/data/records.json".to_string());
+                input.get_or_insert_with(|| "../web/src/data/records.json".to_string());
                 receipts.get_or_insert_with(|| "../agent/data/receipts.json".to_string());
                 round_id.get_or_insert_with(|| PUBLISHED_ROUND.to_string());
                 now.get_or_insert(PUBLISHED_GENERATED_AT);
@@ -500,7 +500,7 @@ fn parse_args() -> Result<Args, String> {
             // round would give away rather than what the first one hashed to.
             "--differencing" => {
                 differencing = true;
-                input.get_or_insert_with(|| "../agent/data/records.json".to_string());
+                input.get_or_insert_with(|| "../web/src/data/records.json".to_string());
                 receipts.get_or_insert_with(|| "../agent/data/receipts.json".to_string());
                 now.get_or_insert(PUBLISHED_GENERATED_AT);
             }

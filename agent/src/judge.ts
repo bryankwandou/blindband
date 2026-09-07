@@ -31,12 +31,12 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { checkRoundDigest, extractRoundJson, sha256Hex } from "./lib/digest.js";
-import { aggregate, type RawRecord } from "./lib/recompute.js";
+import { aggregate, diffRound, fieldsCompared, type RawRecord } from "../../web/src/lib/ruleset.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROUND_PATH = resolve(HERE, "../../web/src/data/round.json");
 const ANCHOR_PATH = resolve(HERE, "../../web/src/data/anchor.json");
-const RECORDS_PATH = resolve(HERE, "../data/records.json");
+const RECORDS_PATH = resolve(HERE, "../../web/src/data/records.json");
 const RPC = process.env.SOLANA_RPC_URL ?? "https://api.devnet.solana.com";
 const MEMO_PROGRAM = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
 
@@ -54,7 +54,7 @@ const anchor = JSON.parse(readFileSync(ANCHOR_PATH, "utf8"));
 const records: RawRecord[] = JSON.parse(readFileSync(RECORDS_PATH, "utf8"));
 
 console.log(`round        : ${round.round_id}  (${round.ruleset})`);
-console.log(`submissions  : ${records.length} rows, read from agent/data/records.json`);
+console.log(`submissions  : ${records.length} rows, read from web/src/data/records.json`);
 console.log(`rpc          : ${RPC}`);
 console.log();
 
@@ -68,50 +68,9 @@ const rules = {
   min_data_age_secs: round.min_data_age_secs,
 };
 
-function diffRound(mine: ReturnType<typeof aggregate>, theirs: any): string[] {
-  const problems: string[] = [];
-
-  for (const [k, v] of Object.entries(mine.totals)) {
-    if (theirs.totals[k] !== v) problems.push(`totals.${k}: published ${theirs.totals[k]}, recomputed ${v}`);
-  }
-  if (mine.bands.length !== theirs.bands.length) {
-    problems.push(`band count: published ${theirs.bands.length}, recomputed ${mine.bands.length}`);
-  }
-
-  for (const band of mine.bands) {
-    const cell = `${band.role} ${band.level}`;
-    const pub = theirs.bands.find(
-      (b: any) => b.role === band.role && b.level === band.level && b.region === band.region,
-    );
-    if (!pub) {
-      problems.push(`${cell}: recomputed as published, but absent from the round`);
-      continue;
-    }
-    for (const [k, v] of Object.entries(band)) {
-      if (pub[k] !== v) problems.push(`${cell} ${k}: published ${pub[k]}, recomputed ${v}`);
-    }
-  }
-
-  for (const s of mine.suppressed) {
-    const cell = `${s.role} ${s.level}`;
-    const pub = theirs.suppressed.find(
-      (x: any) => x.role === s.role && x.level === s.level && x.region === s.region,
-    );
-    if (!pub) {
-      problems.push(`${cell}: recomputed as withheld, but not listed as withheld`);
-      continue;
-    }
-    if (pub.reason !== s.reason) problems.push(`${cell}: withheld as "${pub.reason}", recomputed as "${s.reason}"`);
-    if (pub.contributors !== s.contributors) problems.push(`${cell} contributors: published ${pub.contributors}, recomputed ${s.contributors}`);
-    if (pub.records !== s.records) problems.push(`${cell} records: published ${pub.records}, recomputed ${s.records}`);
-  }
-
-  return problems;
-}
-
 const mine = aggregate(records, round.generated_at, rules);
 const drift = diffRound(mine, round);
-const fields = mine.bands.length * 13 + mine.suppressed.length * 6 + 6;
+const fields = fieldsCompared(mine);
 
 record(
   "the gates and the maths, recomputed from the raw submissions",
