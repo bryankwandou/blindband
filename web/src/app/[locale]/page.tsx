@@ -209,7 +209,17 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
 
         <ul className="mt-12 grid gap-4 sm:grid-cols-2">
           {t.gates.items.map((g, i) => (
-            <Reveal key={g.name} delay={0.05 * i} as="li">
+            // The fifth gate spans both columns. Not to fill the hole an odd
+            // count leaves in a two-column grid, though it does: the first four
+            // judge one round, and this one judges a round against the one
+            // before it. Giving it the full width is the layout agreeing with
+            // the copy.
+            <Reveal
+              key={g.name}
+              delay={0.05 * i}
+              as="li"
+              className={i === t.gates.items.length - 1 ? "sm:col-span-2" : undefined}
+            >
               <div className="group h-full rounded-xl border border-line bg-ink-raised p-6 transition-colors hover:border-line-bright">
                 <div className="flex items-baseline justify-between gap-4">
                   <h3 className="text-[16px] font-medium text-ivory">{g.name}</h3>
