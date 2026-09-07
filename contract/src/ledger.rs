@@ -236,20 +236,31 @@ pub fn compute_round(input: &[u8]) -> Result<Vec<u8>, String> {
         ));
     }
 
-    let round = policy::aggregate(&q.round_id, rows, now_secs());
+    // Gate 5 needs the previous round, and it is read here rather than passed
+    // in: the contributor sets it compares are sealed rows, and a caller that
+    // could supply them could also lie about them.
+    let prior = match &q.follows {
+        Some(previous) => Some(load_prior_round(previous)?),
+        None => None,
+    };
+
+    let round = policy::aggregate_with_history(&q.round_id, rows, now_secs(), prior.as_ref());
     let digest = policy::round_digest(&round)?;
 
     let published = PublishedRound {
-        round,
         attestation: Attestation {
             digest: digest.clone(),
-            ruleset: RULESET_VERSION.to_string(),
+            // The round's own ruleset, not the constant: a round evaluated
+            // against its predecessor ran a larger set of gates than one that
+            // was not, and the attestation has to say which it was.
+            ruleset: round.ruleset.clone(),
             claims_digest_set: true,
             note: "The digest below is written into this transaction's Merkle leaf via \
                    set-claims-digest, so a holder of the receipt can verify the round \
                    off-network without re-executing it."
                 .to_string(),
         },
+        round,
     };
 
     let encoded = serde_json::to_vec(&published).map_err(|e| e.to_string())?;
@@ -344,6 +355,48 @@ fn round_publishes_cell(round_id: &str, record: &Record) -> Result<bool, String>
 }
 
 /// Pull every row for a round out of the sealed ledger.
+/// The previous round, in the shape gate 5 needs it.
+///
+/// Two reads, and neither of them leaves the enclave. The published round says
+/// which cells were published — those are the only ones an outsider could hold
+/// a number for, so they are the only ones that can be differenced against. The
+/// sealed ledger says who was in each cell, which is precisely the fact the
+/// gates exist to keep inside: a published round names contributor *counts* and
+/// never contributor *names*, and that is not an accident to be undone here.
+///
+/// A named predecessor that was never published is an error rather than an
+/// empty prior. Silently treating it as "no history" would turn a typo in a
+/// round id into a round that skipped gate 5 and said nothing about it.
+fn load_prior_round(round_id: &str) -> Result<policy::PriorRound, String> {
+    let bytes = kv_store::get(&rounds_map(), round_id.as_bytes())
+        .map_err(|e| format!("compute-round: could not read round {round_id}: {e}"))?
+        .ok_or_else(|| {
+            format!(
+                "compute-round: this round follows {round_id}, which has not been published. \
+                 Publish it first, or omit `follows` if this is the first round."
+            )
+        })?;
+
+    let previous: PublishedRound = serde_json::from_slice(&bytes)
+        .map_err(|e| format!("compute-round: round {round_id} is corrupt: {e}"))?;
+
+    let mut published: std::collections::BTreeSet<String> = Default::default();
+    for b in &previous.round.bands {
+        published.insert(format!("{}|{}|{}", b.role, b.level, b.region));
+    }
+
+    let mut prior = policy::PriorRound::new();
+    for r in load_round_records(round_id)? {
+        let key = r.cell_key();
+        let cell = prior.entry(key.clone()).or_insert_with(|| policy::PriorCell {
+            contributors: Default::default(),
+            published: published.contains(&key),
+        });
+        cell.contributors.insert(r.contributor);
+    }
+    Ok(prior)
+}
+
 fn load_round_records(round_id: &str) -> Result<Vec<Record>, String> {
     let (start, end) = round_bounds(round_id);
     let pairs = kv_store::scan(&records_map(), &start, &end, SCAN_LIMIT)
