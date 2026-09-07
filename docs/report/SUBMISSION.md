@@ -584,8 +584,10 @@ are open before anyone's actual payroll should go near it:
    it in Q3 with one firm fewer than Q1 had, and no adjacent pair catches it
    while Q3 − Q1 still names that firm. What it has not done is decide a real
    quarter, because there has only been one. The tenant holds 10,352,414,086 base units
-   and each execution locks 10,000,000,000, so a second round — submit,
-   compute, verify — cannot be paid for. `npm run quarter` now checks that
+   and each execution locks 10,000,000,000, so about one is affordable. A
+   quarter costs five: one `submit-batch`, one `compute-round`, and three
+   receipt probes in `verify`. Anchoring costs none of them — that is devnet
+   SOL, not T3N credits. `npm run quarter` now checks that
    before it starts anything, because running out after `submit` would seal
    rows into the ledger belonging to a round that was never published, and
    the ledger does not roll back.

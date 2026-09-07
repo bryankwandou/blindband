@@ -85,22 +85,66 @@ interface Step {
   what: string;
   script: string;
   args: string[];
-  /** Steps that cost credits or write to a chain are skipped by --dry-run. */
-  spends: boolean;
+  /**
+   * Contract executions this step performs. Not the same as "costs something":
+   * `anchor` spends devnet SOL and zero T3N credits, and `verify` makes three
+   * calls rather than one. Counting steps instead of executions gets the budget
+   * wrong in both directions at once.
+   */
+  executions: number;
+  /**
+   * Whether the step changes anything outside this machine — the sealed ledger,
+   * the published round, a devnet transaction.
+   *
+   * Deliberately separate from `executions`, because `anchor` has zero of one
+   * and all of the other: it locks no T3N credit and writes an irreversible
+   * transaction to a public chain. A dry run that skipped on cost alone would
+   * have anchored a digest while announcing it was spending nothing.
+   */
+  changesTheWorld: boolean;
 }
 
 function plan(a: Args): Step[] {
   return [
-    { what: "check the key and the credits", script: "src/preflight.ts", args: [], spends: false },
-    { what: "seal the rows into the ledger", script: "src/submit.ts", args: [a.data], spends: true },
+    // Free: reads the balance and the identity, calls no contract.
+    {
+      what: "check the key and the credits",
+      script: "src/preflight.ts",
+      args: [],
+      executions: 0,
+      changesTheWorld: false,
+    },
+    // One `submit-batch` for the whole file, which is why batching exists.
+    {
+      what: "seal the rows into the ledger",
+      script: "src/submit.ts",
+      args: [a.data],
+      executions: 1,
+      changesTheWorld: true,
+    },
     {
       what: "run the gates inside the enclave",
       script: "src/round.ts",
       args: [a.round, ...a.follows.flatMap((f) => ["--follows", f])],
-      spends: true,
+      executions: 1,
+      changesTheWorld: true,
     },
-    { what: "anchor the digest on devnet", script: "src/anchor.ts", args: [], spends: true },
-    { what: "check what was published", script: "src/verify.ts", args: [], spends: true },
+    // Solana devnet, paid in SOL. No T3N execution is locked here.
+    {
+      what: "anchor the digest on devnet",
+      script: "src/anchor.ts",
+      args: [],
+      executions: 0,
+      changesTheWorld: true,
+    },
+    // Three receipt probes, and the third is a deliberate forgery.
+    {
+      what: "check what was published",
+      script: "src/verify.ts",
+      args: [],
+      executions: 3,
+      changesTheWorld: true,
+    },
   ];
 }
 
@@ -133,7 +177,7 @@ function run(step: Step): number {
  * refuse a quarter than to half-run one.
  */
 async function affordable(steps: Step[]): Promise<{ ok: boolean; message: string }> {
-  const executions = steps.filter((s) => s.spends).length;
+  const executions = steps.reduce((n, step) => n + step.executions, 0);
   const needed = executions * EXECUTION_LOCK;
 
   const { apiKey, who } = callerKey();
@@ -199,16 +243,16 @@ async function main() {
 
   // A dry run is allowed to report an unaffordable plan and stop cleanly:
   // knowing the quarter cannot be paid for is the answer it was asked for.
-  if (!budget.ok) {
-    console.error(a.dryRun ? `Dry run complete.` : ``);
-    process.exit(a.dryRun ? 0 : 1);
-  }
+  // A real run stops here. A dry run does not: it was asked what this quarter
+  // would do, and "it cannot be paid for" is only half of that answer. Printing
+  // the plan as well is the other half, and it costs nothing to print.
+  if (!budget.ok && !a.dryRun) process.exit(1);
 
   for (const [i, step] of steps.entries()) {
     const label = `${i + 1}/${steps.length}  ${step.what}`;
     const cmd = `npx tsx ${step.script}${step.args.length ? " " + step.args.join(" ") : ""}`;
 
-    if (a.dryRun && step.spends) {
+    if (a.dryRun && step.changesTheWorld) {
       console.log(`── ${label}\n   would run: ${cmd}\n`);
       continue;
     }
@@ -229,11 +273,16 @@ async function main() {
     }
   }
 
-  console.log(
-    a.dryRun
-      ? `\nDry run complete. Preflight passed and the plan above is what would run.`
-      : `\nQuarter ${a.round} is published, anchored and verified.`,
-  );
+  if (a.dryRun) {
+    console.log(
+      budget.ok
+        ? `\nDry run complete. Preflight passed, and the plan above is what would run.`
+        : `\nDry run complete. That is the plan; the balance above will not cover it.`,
+    );
+    process.exit(budget.ok ? 0 : 1);
+  }
+
+  console.log(`\nQuarter ${a.round} is published, anchored and verified.`);
 }
 
 try {
