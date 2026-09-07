@@ -51,7 +51,7 @@ where the text says the report is.
 ```
 Blindband — confidential pay benchmarking inside a Terminal 3 TEE, anchored on Solana.
 
-Report (public Google Doc): https://docs.google.com/document/d/194ju4-GlGDcRc5ncdPoaIxPiGunPCsrXYmRuRp6ZW-0/edit?usp=sharing
+Report (public Google Doc): https://docs.google.com/document/d/1TDC0pdzeLlLewQmsGQwZ4n8EnzN2FAQPm9leEzpVJ8Y/edit?usp=sharing
 Source, MIT: https://github.com/bryankwandou/blindband
 Demo video, 63 s, silent, captioned: https://blindband.vercel.app/demo/blindband-demo.mp4
 Static mirror of the same commit: https://bryankwandou.github.io/blindband
