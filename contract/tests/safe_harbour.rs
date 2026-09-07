@@ -309,3 +309,164 @@ fn commitments_are_unique_per_row_and_stable_per_input() {
     assert_ne!(policy::commit(&req, NOW), policy::commit(&other, NOW));
     assert_ne!(policy::commit(&req, NOW), policy::commit(&req, NOW + 1));
 }
+
+// ── Gate 5: differencing across rounds ──────────────────────────────────────
+//
+// The first four gates each reason about one round alone. A consortium runs
+// quarterly, and two rounds that were each safe on their own can give away
+// between them what neither gave away by itself. These are the tests for the
+// gate that closes that, and for the promise that adding it did not disturb
+// the round already anchored on a public chain.
+
+use std::collections::{BTreeMap, BTreeSet};
+use z_blindband::policy::{PriorCell, PriorRound};
+
+/// The cell `healthy_cell()` produces, as the previous round saw it.
+fn prior_with(contributors: &[&str], published: bool) -> PriorRound {
+    let mut prior: PriorRound = BTreeMap::new();
+    prior.insert(
+        "backend engineer|l5|sea".to_string(),
+        PriorCell {
+            contributors: contributors.iter().map(|c| c.to_string()).collect(),
+            published,
+        },
+    );
+    prior
+}
+
+const SIX: [&str; 6] = ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot"];
+
+#[test]
+fn a_round_with_no_history_is_unchanged_by_the_fifth_gate() {
+    // The anchored round was produced this way, and its digest is on devnet.
+    // If this ever fails, the published round stopped being reproducible.
+    let four = policy::aggregate("2026-q1", healthy_cell(), NOW);
+    let five = policy::aggregate_with_history("2026-q1", healthy_cell(), NOW, None);
+
+    assert_eq!(policy::round_digest(&four), policy::round_digest(&five));
+    assert_eq!(four.ruleset, RULESET_VERSION);
+}
+
+#[test]
+fn an_unchanged_contributor_set_still_publishes() {
+    let prior = prior_with(&SIX, true);
+    let round = policy::aggregate_with_history("2026-q2", healthy_cell(), NOW, Some(&prior));
+
+    assert_eq!(round.bands.len(), 1);
+    assert_eq!(round.suppressed.len(), 0);
+    assert_eq!(round.ruleset, RULESET_VERSION_WITH_HISTORY);
+}
+
+#[test]
+fn one_firm_leaving_makes_the_delta_attributable_and_withholds_the_cell() {
+    // Last quarter had a seventh firm. It is gone, so the whole change in this
+    // cell is that firm's rows — subtract the two published cells and you have
+    // read what it paid.
+    let prior = prior_with(
+        &["alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf"],
+        true,
+    );
+    let round = policy::aggregate_with_history("2026-q2", healthy_cell(), NOW, Some(&prior));
+
+    assert_eq!(round.bands.len(), 0);
+    assert_eq!(round.suppressed.len(), 1);
+    assert_eq!(round.suppressed[0].reason, REASON_CHURN);
+    // The cell cleared the first four gates. It is withheld for the fifth.
+    assert_eq!(round.suppressed[0].contributors, 6);
+}
+
+#[test]
+fn one_firm_joining_is_just_as_attributable_as_one_leaving() {
+    let prior = prior_with(&["alpha", "bravo", "charlie", "delta", "echo"], true);
+    let round = policy::aggregate_with_history("2026-q2", healthy_cell(), NOW, Some(&prior));
+
+    assert_eq!(round.bands.len(), 0);
+    assert_eq!(round.suppressed[0].reason, REASON_CHURN);
+}
+
+#[test]
+fn two_firms_moving_together_cannot_be_separated_so_the_cell_publishes() {
+    // "golf" out and "foxtrot" in: an observer sees their combined effect and
+    // cannot attribute the change to either. This is the contributor floor's
+    // argument, one round later.
+    let prior = prior_with(
+        &["alpha", "bravo", "charlie", "delta", "echo", "golf"],
+        true,
+    );
+    let round = policy::aggregate_with_history("2026-q2", healthy_cell(), NOW, Some(&prior));
+
+    assert_eq!(round.bands.len(), 1, "churn of 2 is not attributable");
+    assert_eq!(round.suppressed.len(), 0);
+}
+
+#[test]
+fn churn_is_the_symmetric_difference_not_the_change_in_headcount() {
+    // Six firms last quarter, six this quarter, and not one of them the same.
+    // A gate that compared counts would have seen no change at all and
+    // published a cell built from an entirely different set of companies.
+    let prior = prior_with(&["golf", "hotel", "india", "juliet", "kilo", "lima"], true);
+    let round = policy::aggregate_with_history("2026-q2", healthy_cell(), NOW, Some(&prior));
+
+    assert_eq!(round.bands.len(), 1, "a churn of 12 is safe to publish");
+}
+
+#[test]
+fn a_cell_withheld_last_round_has_nothing_to_be_differenced_against() {
+    // Nothing was published last quarter, so there is no earlier number to
+    // subtract this one from. The single firm that left is irrelevant.
+    let prior = prior_with(
+        &["alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf"],
+        false,
+    );
+    let round = policy::aggregate_with_history("2026-q2", healthy_cell(), NOW, Some(&prior));
+
+    assert_eq!(round.bands.len(), 1);
+}
+
+#[test]
+fn a_cell_the_previous_round_never_saw_publishes_normally() {
+    let prior: PriorRound = BTreeMap::new();
+    let round = policy::aggregate_with_history("2026-q2", healthy_cell(), NOW, Some(&prior));
+
+    assert_eq!(round.bands.len(), 1);
+    assert_eq!(round.ruleset, RULESET_VERSION_WITH_HISTORY);
+}
+
+#[test]
+fn the_fifth_gate_runs_after_the_other_four_and_does_not_mask_them() {
+    // A cell that fails the contributor floor must say so, not report churn.
+    // The reason a cell was withheld is the whole product; a gate that
+    // shadowed an earlier one would make the published reasons untrustworthy.
+    let mut thin = healthy_cell();
+    thin.retain(|r| r.contributor == "alpha" || r.contributor == "bravo");
+    let prior = prior_with(&SIX, true);
+
+    let round = policy::aggregate_with_history("2026-q2", thin, NOW, Some(&prior));
+    assert_eq!(round.suppressed[0].reason, REASON_CONTRIBUTORS);
+}
+
+#[test]
+fn the_two_rulesets_are_distinguishable_from_the_round_alone() {
+    // A verifier holding only the published round has to be able to tell which
+    // gates ran, or the ruleset string is decoration.
+    let without = policy::aggregate("2026-q1", healthy_cell(), NOW);
+    let with = policy::aggregate_with_history(
+        "2026-q2",
+        healthy_cell(),
+        NOW,
+        Some(&prior_with(&SIX, true)),
+    );
+
+    assert_ne!(without.ruleset, with.ruleset);
+    assert_ne!(policy::round_digest(&without), policy::round_digest(&with));
+}
+
+#[test]
+fn a_prior_cell_holds_a_set_so_duplicate_rows_cannot_inflate_churn() {
+    // Contributors, not rows. Six firms with two rows each is a set of six.
+    let set: BTreeSet<String> = healthy_cell()
+        .iter()
+        .map(|r| r.contributor.clone())
+        .collect();
+    assert_eq!(set.len(), 6);
+}

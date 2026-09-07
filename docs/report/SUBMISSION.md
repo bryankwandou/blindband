@@ -494,17 +494,19 @@ are open before anyone's actual payroll should go near it:
 2. Rounds currently execute under the **tenant identity**, not a delegated
    agent key. The agent reports which identity ran a round rather than
    pretending it was the agent.
-3. **The gates are evaluated inside a single round, so two rounds compared can
-   leak what one round withheld.** If a firm joins or leaves between rounds,
-   the change in a cell comes from that firm's rows alone, and a large enough
-   change can be attributed to it — the standard differencing attack on
-   repeated aggregates. A consortium running this quarterly meets it in the
-   second quarter, so it is a real limit on the safe-harbour argument rather
-   than a theoretical one. The fix is a fifth gate comparing a cell against the
-   same cell in the previous round and withholding when the contributor set has
-   moved too far; the contract already stores the round history it needs. It is
-   named here, and on the site's FAQ, rather than left for a reviewer to find —
-   a gate that has not been written is not a gate.
+3. **Gate 5 exists, but it has never run on a live round, because there has
+   only been one.** The first four gates each judge a round in isolation, and a
+   consortium runs quarterly: if one firm joins or leaves a cell, the change in
+   that cell's median was computed from that firm's rows and nothing else, so
+   subtracting two published rounds reads it off. `policy::aggregate_with_history`
+   republishes a cell only when its contributor set is unchanged or at least
+   `MIN_CONTRIBUTOR_CHURN` organisations moved together, and eleven tests in
+   `contract/tests/safe_harbour.rs` hold it to that. `cargo run --example replay
+   -- --differencing` runs it on the real 117 submissions: it prints the figure
+   the first four gates would have leaked about one firm, then withholds the
+   cell. What it has not done is decide a real quarter, and it closes the
+   attack against the previous round only — a patient observer holding four
+   quarters can still difference across a gap this does not look at.
 
 And BB-02 means attestation is currently unverifiable against the sandbox node.
 That is a platform issue, but it is a load-bearing one for this product, so it

@@ -25,6 +25,29 @@ pub const MAX_CONTRIBUTOR_SHARE_BPS: u64 = 2500;
 /// Records must describe compensation at least this old. Three months.
 pub const MIN_DATA_AGE_SECS: u64 = 91 * 24 * 60 * 60;
 
+/// Identifier for a round that was evaluated against the previous round as
+/// well as against itself — that is, one that ran gate 5 in addition to the
+/// four above.
+///
+/// The first round of a consortium has no history to check, so it is produced
+/// under [`RULESET_VERSION`] and says so. That is not a loophole: a round with
+/// nothing behind it genuinely cannot leak by subtraction, and pretending it
+/// had been checked against a predecessor that does not exist would be the
+/// dishonest option.
+pub const RULESET_VERSION_WITH_HISTORY: &str = "blindband-safe-harbour/v2";
+
+/// How many contributors must enter or leave a cell *together* before the
+/// change between two published rounds stops being attributable to one of
+/// them.
+///
+/// Two. With a single firm moving in or out, the difference between this
+/// round's cell and the last one is computed from that firm's rows and nothing
+/// else, so anyone holding both rounds can read off what it pays. With two or
+/// more moving at once, the observer sees their combined effect and cannot
+/// separate it — which is the same argument the contributor floor makes, one
+/// round later.
+pub const MIN_CONTRIBUTOR_CHURN: usize = 2;
+
 /// One organisation's submission for one employee.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SubmitReq {

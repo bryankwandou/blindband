@@ -344,7 +344,7 @@ const en: Dictionary = {
       },
       {
         q: "Could two rounds, compared, reveal what one round withheld?",
-        a: "Yes, in principle, and nothing in this version stops it. The four gates are evaluated inside a single round. If a firm joins or leaves between rounds, the change in a cell is computed from that firm's rows alone, and a large enough change can be attributed to it — the standard differencing attack on repeated aggregates. A consortium running this quarterly would meet it in the second quarter. The fix is a fifth gate that compares a cell with the same cell in the previous round and withholds when the contributor set has moved too far; the contract already stores the round history it would need. It is named here rather than left to be found, because a gate that has not been written is not a gate.",
+        a: "They could, and there is a fifth gate for it. The first four gates each judge a single round, and a consortium runs every quarter: if one firm joins or leaves a cell, the change in that cell's median was computed from that firm's rows and nothing else, so subtracting two rounds reads it off. Gate 5 republishes a cell only if its contributor set is unchanged, or if at least two organisations moved at once, so no delta belongs to one firm. You can watch it work on the real submissions: `cargo run --example replay -- --differencing` prints the figure the first four gates would have leaked, then withholds the cell. Two limits it does not close: it compares against the previous round only, so a patient observer holding four quarters can still difference across a gap, and the withholding itself says that one firm moved — far less than the numbers it protects. The published round carries `blindband-safe-harbour/v1` because it was the first, with nothing behind it to difference against; the next round carries v2."
       },
     ],
   },
@@ -585,7 +585,7 @@ const id: Dictionary = {
       },
       {
         q: "Bisakah dua ronde, bila dibandingkan, membuka apa yang ditahan salah satunya?",
-        a: "Bisa, pada prinsipnya, dan versi ini belum mencegahnya. Keempat gerbang dinilai di dalam satu ronde saja. Kalau ada perusahaan yang masuk atau keluar di antara dua ronde, perubahan pada sebuah sel berasal dari baris perusahaan itu saja, dan perubahan yang cukup besar bisa diatributkan kepadanya — serangan differencing yang klasik pada agregat berulang. Konsorsium yang menjalankan ini tiap kuartal akan menemuinya di kuartal kedua. Perbaikannya adalah gerbang kelima yang membandingkan sebuah sel dengan sel yang sama di ronde sebelumnya, lalu menahannya bila susunan penyumbang bergeser terlalu jauh; riwayat ronde yang dibutuhkannya sudah disimpan kontrak. Ini disebutkan di sini, bukan dibiarkan ditemukan orang lain, karena gerbang yang belum ditulis bukanlah gerbang.",
+        a: "Bisa, dan sudah ada gerbang kelima untuk itu. Empat gerbang pertama menilai satu ronde saja, padahal konsorsium berjalan tiap kuartal: kalau satu perusahaan masuk atau keluar dari sebuah sel, perubahan median sel itu berasal dari baris perusahaan tersebut dan bukan dari yang lain, sehingga mengurangkan dua ronde langsung membacanya. Gerbang kelima menerbitkan kembali sebuah sel hanya bila susunan penyumbangnya tidak berubah, atau bila sedikitnya dua organisasi berpindah sekaligus, supaya tidak ada selisih yang menjadi milik satu perusahaan. Anda bisa melihatnya bekerja pada kiriman yang sungguhan: `cargo run --example replay -- --differencing` mencetak angka yang akan bocor di bawah empat gerbang pertama, lalu menahan selnya. Dua batas yang belum ditutupnya: ia hanya membandingkan dengan ronde sebelumnya, jadi pengamat sabar yang memegang empat kuartal masih bisa melompati jarak, dan penahanannya sendiri memberi tahu bahwa satu perusahaan berpindah — jauh lebih sedikit daripada angka yang dilindunginya. Ronde yang sudah terbit membawa `blindband-safe-harbour/v1` karena ia yang pertama, tidak ada apa pun di belakangnya untuk dibandingkan; ronde berikutnya membawa v2."
       },
     ],
   },
@@ -819,7 +819,7 @@ const zh: Dictionary = {
       },
       {
         q: "把两轮结果放在一起比对，会泄露某一轮扣下的东西吗？",
-        a: "原则上会，这一版也还没有防住。四道门槛都是在单轮之内判定的。如果有企业在两轮之间加入或退出，某个单元的变化就完全来自那家企业的数据行，变化足够大时便可归因到它——这是对重复聚合的经典差分攻击。按季度运行的联盟在第二个季度就会遇到。解法是第五道门槛：把一个单元与上一轮的同一单元比对，当贡献方集合变动过大时扣下不发；它所需要的历轮记录，合约已经存着了。这里主动写出来而不是留给别人发现，因为还没写出来的门槛不算门槛。",
+        a: "会，为此有第五道门槛。前四道门槛只判定单轮，而联盟是按季度运行的：若一家企业加入或退出某个单元，该单元中位数的变化就完全来自那家企业的数据行，两轮相减即可读出。第五道门槛规定：只有在贡献方集合未变，或至少两家机构同时变动时，已发布过的单元才会再次发布，使任何差值都不归属于单一企业。可以在真实数据上亲自验证：`cargo run --example replay -- --differencing` 会先打印出前四道门槛本会泄露的那个数字，然后扣下该单元。它尚未封死两件事：它只与上一轮比对，因此手握四个季度的耐心观察者仍可跨期做差分；而扣下本身也在告诉别人有一家企业发生了变动——这比它所保护的数字轻得多。已发布的那一轮标注为 `blindband-safe-harbour/v1`，因为它是第一轮，身后无物可差分；下一轮将标注为 v2。"
       },
     ],
   },

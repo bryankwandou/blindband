@@ -14,7 +14,7 @@
 use crate::model::*;
 use crate::stats::{mean, percentile};
 use sha2::{Digest, Sha256};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 /// Reasons a cell can be withheld. Stable strings — the web console and the
 /// docs both key off them.
@@ -22,12 +22,78 @@ pub const REASON_CONTRIBUTORS: &str = "below_contributor_floor";
 pub const REASON_RECORDS: &str = "below_record_floor";
 pub const REASON_CONCENTRATION: &str = "contributor_concentration_exceeded";
 pub const REASON_CURRENCY: &str = "mixed_currency";
+pub const REASON_CHURN: &str = "contributor_churn_attributable";
+
+/// What the previous round knew about one cell.
+///
+/// Only two things are needed to decide gate 5, and neither of them may ever
+/// be published: which organisations were in the cell, and whether the cell
+/// was published at all. A round that named its contributors per cell would
+/// hand over the membership map the gates exist to protect, so this is built
+/// inside the enclave from the sealed submissions of the previous round and
+/// never leaves it.
+#[derive(Debug, Clone, Default)]
+pub struct PriorCell {
+    pub contributors: BTreeSet<String>,
+    pub published: bool,
+}
+
+/// The previous round, keyed by [`Record::cell_key`].
+pub type PriorRound = BTreeMap<String, PriorCell>;
 
 /// Fold a batch of records into a publishable round.
 ///
 /// `now` is the cluster timestamp in Unix seconds, supplied by the caller so
 /// this function stays pure and testable.
+///
+/// This is the first round of a consortium, or a round evaluated as if it
+/// were: four gates, no history. See [`aggregate_with_history`] for the fifth.
 pub fn aggregate(round_id: &str, records: Vec<Record>, now: u64) -> Round {
+    aggregate_with_history(round_id, records, now, None)
+}
+
+/// Fold a batch of records into a publishable round, checking it against the
+/// round before it.
+///
+/// The four gates in [`aggregate`] all reason about a single round in
+/// isolation, and a consortium does not run in isolation — it runs every
+/// quarter. Two rounds published under the same ruleset can give away between
+/// them what neither gave away alone: if one firm joins or leaves a cell, the
+/// change in that cell's percentiles is computed from that firm's rows and
+/// nothing else. Subtract, and you have read a competitor's pay out of two
+/// documents that were each individually safe. It is the standard differencing
+/// attack on repeated aggregates, and a quarterly consortium meets it in its
+/// second quarter.
+///
+/// So a cell that was published last round is published again only if its
+/// contributor set is unchanged, or if at least [`MIN_CONTRIBUTOR_CHURN`]
+/// organisations moved at once. Anything in between is withheld with
+/// [`REASON_CHURN`].
+///
+/// Two deliberate limits, stated here rather than left to be discovered:
+///
+/// - It compares against the immediately preceding round only. A patient
+///   observer holding four quarters can still difference across a gap this
+///   does not look at. Closing that needs the whole published history rather
+///   than its last element, which is a larger change than this one.
+/// - Withholding is itself a signal: it says a single organisation moved. That
+///   is far weaker than the numbers it protects, and the alternative — a cell
+///   that silently vanishes with no reason — was rejected everywhere else in
+///   this ruleset, so it is rejected here too.
+///
+/// Passing `prior` changes the ruleset identifier the round carries, because a
+/// round that has been checked against its predecessor was produced by a
+/// different ruleset from one that has not. No field is added to [`Round`]:
+/// the digest of the published round is anchored on a public chain, and adding
+/// a field would change the JSON of every round ever recomputed, including the
+/// one already witnessed there. The ruleset string carries the difference
+/// instead, and the threshold lives in the source it names.
+pub fn aggregate_with_history(
+    round_id: &str,
+    records: Vec<Record>,
+    now: u64,
+    prior: Option<&PriorRound>,
+) -> Round {
     let mut totals = Totals {
         records_ingested: records.len(),
         ..Default::default()
@@ -63,10 +129,37 @@ pub fn aggregate(round_id: &str, records: Vec<Record>, now: u64) -> Round {
 
     let mut bands = Vec::new();
     let mut suppressed = Vec::new();
-    for (_key, rows) in cells {
+    for (key, rows) in cells {
         match evaluate_cell(&rows) {
-            Ok(band) => bands.push(band),
             Err(s) => suppressed.push(s),
+            Ok(band) => {
+                // Gate 5 — differencing against the previous round. Only a cell
+                // that was published last time can be differenced against, and
+                // only a cell that passed the first four gates gets this far.
+                let last = prior.and_then(|p| p.get(&key));
+                let attributable = match last {
+                    Some(cell) if cell.published => {
+                        let here: BTreeSet<&str> =
+                            rows.iter().map(|r| r.contributor.as_str()).collect();
+                        let churn = churn_between(&cell.contributors, &here);
+                        churn > 0 && churn < MIN_CONTRIBUTOR_CHURN
+                    }
+                    _ => false,
+                };
+
+                if attributable {
+                    suppressed.push(Suppressed {
+                        role: band.role,
+                        level: band.level,
+                        region: band.region,
+                        contributors: band.contributors,
+                        records: band.records,
+                        reason: REASON_CHURN.to_string(),
+                    });
+                } else {
+                    bands.push(band);
+                }
+            }
         }
     }
     totals.cells_published = bands.len();
@@ -79,7 +172,11 @@ pub fn aggregate(round_id: &str, records: Vec<Record>, now: u64) -> Round {
 
     Round {
         round_id: round_id.to_string(),
-        ruleset: RULESET_VERSION.to_string(),
+        ruleset: if prior.is_some() {
+            RULESET_VERSION_WITH_HISTORY.to_string()
+        } else {
+            RULESET_VERSION.to_string()
+        },
         min_contributors_per_cell: MIN_CONTRIBUTORS_PER_CELL,
         min_records_per_cell: MIN_RECORDS_PER_CELL,
         max_contributor_share_bps: MAX_CONTRIBUTOR_SHARE_BPS,
@@ -156,6 +253,17 @@ fn evaluate_cell(rows: &[Record]) -> Result<Band, Suppressed> {
         mean: mean(&values).unwrap_or(0),
         top_contributor_share_bps: share_bps,
     })
+}
+
+/// How many organisations entered or left a cell between two rounds.
+///
+/// The symmetric difference, not the change in count: five firms out and five
+/// different firms in is a churn of ten, and the cell is safe to publish. A
+/// count would have read that as zero and published a cell whose every number
+/// came from a different set of companies than the one it is compared against.
+fn churn_between(previous: &BTreeSet<String>, current: &BTreeSet<&str>) -> usize {
+    let now: BTreeSet<String> = current.iter().map(|c| (*c).to_string()).collect();
+    previous.symmetric_difference(&now).count()
 }
 
 /// SHA-256 over the sorted commitments of everything that reached the maths.
