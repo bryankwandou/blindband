@@ -83,15 +83,52 @@ function money(minor: number, currency: string): string {
   })}`;
 }
 
+/**
+ * `npm run round -- <round-id> [--follows <earlier-round> ...]`
+ *
+ * Every `--follows` names a round this contract has already published. Gate 5
+ * compares each cell against every one of them, so a consortium in its fourth
+ * quarter names three, oldest first. Naming none says this is a first round,
+ * which is true exactly once.
+ *
+ * The enclave cannot work the list out for itself — round ids are labels a
+ * consortium chooses, not a sequence to count through — and a caller gains
+ * nothing by lying about it, because the contributor sets are read from sealed
+ * submissions and naming a round only ever adds a constraint.
+ */
+function parseArgs(argv: string[]): { roundId: string; follows: string[] } {
+  const follows: string[] = [];
+  const positional: string[] = [];
+
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--follows") {
+      const next = argv[++i];
+      if (!next || next.startsWith("--")) {
+        throw new Error("--follows needs the id of a round that has been published");
+      }
+      follows.push(next);
+    } else {
+      positional.push(argv[i]!);
+    }
+  }
+
+  return { roundId: positional[0] ?? "2026-q1", follows };
+}
+
 async function main() {
-  const roundId = process.argv[2] ?? "2026-q1";
+  const { roundId, follows } = parseArgs(process.argv.slice(2));
 
   const state = loadState();
   const { apiKey, who } = callerKey();
 
   console.log(`contract    : ${state.contractName}`);
   console.log(`calling as  : ${who}`);
-  console.log(`round       : ${roundId}\n`);
+  console.log(`round       : ${roundId}`);
+  console.log(
+    follows.length
+      ? `follows     : ${follows.join(", ")} — gate 5 compares against each\n`
+      : `follows     : nothing, so this is a first round and gate 5 has no history\n`,
+  );
 
   const session = await connect(apiKey, who);
   const before = await creditsAvailable(session);
@@ -101,7 +138,7 @@ async function main() {
     tenantFor(session),
     state,
     "compute-round",
-    { round_id: roundId },
+    { round_id: roundId, follows },
   );
 
   const { round, attestation } = parsed;
