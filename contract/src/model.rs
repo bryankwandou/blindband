@@ -221,18 +221,24 @@ pub struct PublishedRound {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RoundQuery {
     pub round_id: String,
-    /// The round this one follows, if it follows one.
+    /// Every round published before this one, oldest first.
     ///
-    /// Gate 5 compares a cell against the same cell in the previous round, and
-    /// the enclave cannot infer which round that was: round ids are labels a
-    /// consortium chooses, not a sequence the contract can count through. So
-    /// the caller names it, and naming nothing means this is the first round —
-    /// which is exactly what the first round is.
+    /// Gate 5 compares a cell against every round that cell was published in,
+    /// not merely the one before — withhold a cell in Q2, republish it in Q3
+    /// with one firm fewer than Q1 had, and an adjacent comparison sees nothing
+    /// while Q3 − Q1 still names that firm.
+    ///
+    /// The enclave cannot infer this list: round ids are labels a consortium
+    /// chooses, not a sequence a contract can count through. So the caller
+    /// names them, and naming none means this is the first round — which is
+    /// exactly what the first round is. What the caller cannot do is lie
+    /// usefully: the contributor sets are read from sealed submissions, so
+    /// naming a round only ever adds a constraint.
     ///
     /// `default` rather than required, so a caller written against the earlier
     /// contract keeps working and gets the behaviour it already had.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub follows: Option<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub follows: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

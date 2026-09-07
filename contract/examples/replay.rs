@@ -453,14 +453,25 @@ fn prior_from(records: &[Record], round: &Round) -> PriorRound {
         .map(|b| format!("{}|{}|{}", b.role, b.level, b.region))
         .collect();
 
-    let mut prior: PriorRound = PriorRound::new();
+    // One round of history, so one contributor set per cell — and only for the
+    // cells that round actually published, since a withheld cell emitted no
+    // number for anyone to subtract from.
+    let mut sets: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
     for r in records {
         let key = r.cell_key();
-        let entry = prior.entry(key.clone()).or_insert_with(|| PriorCell {
-            contributors: BTreeSet::new(),
-            published: published.contains(&key),
-        });
-        entry.contributors.insert(r.contributor.clone());
+        if published.contains(&key) {
+            sets.entry(key).or_default().insert(r.contributor.clone());
+        }
+    }
+
+    let mut prior = PriorRound::new();
+    for (key, contributors) in sets {
+        prior.insert(
+            key,
+            PriorCell {
+                published_as: vec![contributors],
+            },
+        );
     }
     prior
 }

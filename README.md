@@ -9,7 +9,7 @@ vendor and trust a promise.
 
 Blindband replaces the promise with an enclave. Members submit rows that stay
 sealed, the aggregation runs inside a Terminal 3 TEE, and a cell is published
-only after it clears four gates drawn from antitrust safe-harbour guidance. The
+only after it clears the gates drawn from antitrust safe-harbour guidance. The
 round is then hashed, the digest is bound into the transaction receipt, and the
 same digest is written to Solana devnet — so a round cannot be quietly swapped
 for a friendlier one after the fact.
@@ -40,7 +40,7 @@ gates, which is the part worth looking at.
 | Data scientist L5 | `contributor_concentration_exceeded` | 5 / 13 |
 | Engineering manager M2 | `below_contributor_floor` | 3 / 6 |
 
-## The four gates
+## The gates
 
 Compiled into the contract, named in every published round, and applied before
 anything leaves the enclave.
@@ -51,6 +51,25 @@ anything leaves the enclave.
 | Historical data | Effective date at least 91 days old. Anything more recent is dropped and counted in the totals. |
 | Contributor floor | At least 5 independent firms and 10 rows per cell. |
 | Concentration ceiling | No single firm above 25% of a cell's rows. |
+| Differencing guard | A cell is published again only if its contributor set is unchanged from every round it was published in, or differs from each by at least 2 firms. |
+
+The first four judge a round on its own. The fifth judges it against every
+round before it, because a consortium runs every quarter and two rounds that
+were each safe alone can give away between them what neither gave away by
+itself: if one firm leaves a cell, the change in that cell's median was computed
+from its rows and nothing else. Against the whole history rather than the last
+round, because withholding a cell in Q2 and republishing it in Q3 with one firm
+fewer than Q1 had leaves no adjacent pair to catch it, while Q3 − Q1 still names
+that firm. Watch it happen on the real submissions, and then watch the gate
+refuse:
+
+```bash
+cd contract && cargo run --example replay -- --differencing
+```
+
+The published round carries `blindband-safe-harbour/v1` and cleared four gates,
+because it was the first round and had nothing behind it to be differenced
+against. Every round after it carries v2 and faces five.
 
 Blindband is engineering, not legal advice. The gates follow published
 safe-harbour guidance; whether they fit a particular consortium is a question
@@ -96,7 +115,7 @@ The four checks are different in kind on purpose, because passing all four is
 much harder to fake than passing any one of them.
 
 1. **The numbers are rederived, not read.** `agent/src/lib/recompute.ts` is a
-   second implementation of the four gates and the percentile maths, written
+   second implementation of the gates and the percentile maths, written
    against `policy.rs` rather than sharing code with it. It folds the 117 raw
    submissions into a round of its own and diffs it against the published one
    field by field — every percentile, every contributor count, both withholding
@@ -250,7 +269,7 @@ nothing of ours is in that loop.
 ```
 contract/src/model.rs    wire types + ruleset constants
 contract/src/stats.rs    percentile maths — pure, unit-tested
-contract/src/policy.rs   the four gates + aggregation — pure, unit-tested
+contract/src/policy.rs   the gates + aggregation — pure, unit-tested
 contract/src/ledger.rs   the only module that touches the host (wasm32 only)
 contract/examples/replay.rs  run the gates on your own CSV, or replay the round
 

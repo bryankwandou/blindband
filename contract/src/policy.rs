@@ -24,21 +24,28 @@ pub const REASON_CONCENTRATION: &str = "contributor_concentration_exceeded";
 pub const REASON_CURRENCY: &str = "mixed_currency";
 pub const REASON_CHURN: &str = "contributor_churn_attributable";
 
-/// What the previous round knew about one cell.
+/// Every earlier round in which one cell was published.
 ///
-/// Only two things are needed to decide gate 5, and neither of them may ever
-/// be published: which organisations were in the cell, and whether the cell
-/// was published at all. A round that named its contributors per cell would
-/// hand over the membership map the gates exist to protect, so this is built
-/// inside the enclave from the sealed submissions of the previous round and
-/// never leaves it.
+/// A history rather than a predecessor, and that is the whole difference
+/// between a gate that works and one that looks like it does. Comparing only
+/// against the round immediately before leaves the gap open: if a cell is
+/// withheld in Q2 and republished in Q3 with one firm fewer than it had in Q1,
+/// there is no adjacent pair to compare and the subtraction Q3 − Q1 still
+/// names that firm. An observer keeps every round; the gate has to as well.
+///
+/// Each entry is the contributor set of this cell in one round where it was
+/// **published**. Rounds where the cell was withheld are absent, because
+/// nothing was emitted then for anyone to subtract from.
+///
+/// None of this may ever be published. A round names contributor counts and
+/// never contributor names, so these sets are built inside the enclave from the
+/// sealed submissions and do not leave it.
 #[derive(Debug, Clone, Default)]
 pub struct PriorCell {
-    pub contributors: BTreeSet<String>,
-    pub published: bool,
+    pub published_as: Vec<BTreeSet<String>>,
 }
 
-/// The previous round, keyed by [`Record::cell_key`].
+/// Every published round so far, keyed by [`Record::cell_key`].
 pub type PriorRound = BTreeMap<String, PriorCell>;
 
 /// Fold a batch of records into a publishable round.
@@ -65,21 +72,22 @@ pub fn aggregate(round_id: &str, records: Vec<Record>, now: u64) -> Round {
 /// attack on repeated aggregates, and a quarterly consortium meets it in its
 /// second quarter.
 ///
-/// So a cell that was published last round is published again only if its
-/// contributor set is unchanged, or if at least [`MIN_CONTRIBUTOR_CHURN`]
-/// organisations moved at once. Anything in between is withheld with
-/// [`REASON_CHURN`].
+/// So a cell is published again only if its contributor set is unchanged from
+/// every round it was published in before, or differs from each of them by at
+/// least [`MIN_CONTRIBUTOR_CHURN`] organisations. Anything in between is
+/// withheld with [`REASON_CHURN`].
 ///
-/// Two deliberate limits, stated here rather than left to be discovered:
+/// Against the whole history, not the last round. Comparing adjacent rounds
+/// alone leaves the gap open: withhold a cell in Q2, republish it in Q3 with
+/// one firm fewer than Q1 had, and there is no adjacent pair to catch it while
+/// Q3 − Q1 still names that firm. An observer keeps every round they have ever
+/// seen, so the gate compares against every round it has ever published.
 ///
-/// - It compares against the immediately preceding round only. A patient
-///   observer holding four quarters can still difference across a gap this
-///   does not look at. Closing that needs the whole published history rather
-///   than its last element, which is a larger change than this one.
-/// - Withholding is itself a signal: it says a single organisation moved. That
-///   is far weaker than the numbers it protects, and the alternative — a cell
-///   that silently vanishes with no reason — was rejected everywhere else in
-///   this ruleset, so it is rejected here too.
+/// One limit remains, stated here rather than left to be discovered.
+/// Withholding is itself a signal: it says a single organisation moved. That is
+/// far weaker than the numbers it protects, and the alternative — a cell that
+/// silently vanishes with no reason given — was rejected everywhere else in
+/// this ruleset, so it is rejected here too.
 ///
 /// Passing `prior` changes the ruleset identifier the round carries, because a
 /// round that has been checked against its predecessor was produced by a
@@ -136,15 +144,19 @@ pub fn aggregate_with_history(
                 // Gate 5 — differencing against the previous round. Only a cell
                 // that was published last time can be differenced against, and
                 // only a cell that passed the first four gates gets this far.
-                let last = prior.and_then(|p| p.get(&key));
-                let attributable = match last {
-                    Some(cell) if cell.published => {
+                let attributable = match prior.and_then(|p| p.get(&key)) {
+                    Some(history) => {
                         let here: BTreeSet<&str> =
                             rows.iter().map(|r| r.contributor.as_str()).collect();
-                        let churn = churn_between(&cell.contributors, &here);
-                        churn > 0 && churn < MIN_CONTRIBUTOR_CHURN
+                        // Against every round this cell was published in, not
+                        // only the last. One attributable pair anywhere in the
+                        // history is a subtraction someone can perform.
+                        history.published_as.iter().any(|before| {
+                            let churn = churn_between(before, &here);
+                            churn > 0 && churn < MIN_CONTRIBUTOR_CHURN
+                        })
                     }
-                    _ => false,
+                    None => false,
                 };
 
                 if attributable {

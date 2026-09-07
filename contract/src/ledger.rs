@@ -239,9 +239,10 @@ pub fn compute_round(input: &[u8]) -> Result<Vec<u8>, String> {
     // Gate 5 needs the previous round, and it is read here rather than passed
     // in: the contributor sets it compares are sealed rows, and a caller that
     // could supply them could also lie about them.
-    let prior = match &q.follows {
-        Some(previous) => Some(load_prior_round(previous)?),
-        None => None,
+    let prior = if q.follows.is_empty() {
+        None
+    } else {
+        Some(load_prior_rounds(&q.follows)?)
     };
 
     let round = policy::aggregate_with_history(&q.round_id, rows, now_secs(), prior.as_ref());
@@ -355,45 +356,62 @@ fn round_publishes_cell(round_id: &str, record: &Record) -> Result<bool, String>
 }
 
 /// Pull every row for a round out of the sealed ledger.
-/// The previous round, in the shape gate 5 needs it.
+/// Every earlier round, in the shape gate 5 needs them.
 ///
-/// Two reads, and neither of them leaves the enclave. The published round says
-/// which cells were published — those are the only ones an outsider could hold
+/// Two reads per round, and neither of them leaves the enclave. A published
+/// round says which cells were published — those are the only ones an outsider could hold
 /// a number for, so they are the only ones that can be differenced against. The
 /// sealed ledger says who was in each cell, which is precisely the fact the
 /// gates exist to keep inside: a published round names contributor *counts* and
 /// never contributor *names*, and that is not an accident to be undone here.
 ///
-/// A named predecessor that was never published is an error rather than an
-/// empty prior. Silently treating it as "no history" would turn a typo in a
-/// round id into a round that skipped gate 5 and said nothing about it.
-fn load_prior_round(round_id: &str) -> Result<policy::PriorRound, String> {
-    let bytes = kv_store::get(&rounds_map(), round_id.as_bytes())
-        .map_err(|e| format!("compute-round: could not read round {round_id}: {e}"))?
-        .ok_or_else(|| {
-            format!(
-                "compute-round: this round follows {round_id}, which has not been published. \
-                 Publish it first, or omit `follows` if this is the first round."
-            )
-        })?;
-
-    let previous: PublishedRound = serde_json::from_slice(&bytes)
-        .map_err(|e| format!("compute-round: round {round_id} is corrupt: {e}"))?;
-
-    let mut published: std::collections::BTreeSet<String> = Default::default();
-    for b in &previous.round.bands {
-        published.insert(format!("{}|{}|{}", b.role, b.level, b.region));
-    }
-
+/// A named round that was never published is an error rather than an empty
+/// history. Silently treating it as "nothing to compare against" would turn a
+/// typo in a round id into a round that skipped gate 5 and said nothing about
+/// it — and the caller who made the typo would never learn.
+fn load_prior_rounds(round_ids: &[String]) -> Result<policy::PriorRound, String> {
     let mut prior = policy::PriorRound::new();
-    for r in load_round_records(round_id)? {
-        let key = r.cell_key();
-        let cell = prior.entry(key.clone()).or_insert_with(|| policy::PriorCell {
-            contributors: Default::default(),
-            published: published.contains(&key),
-        });
-        cell.contributors.insert(r.contributor);
+
+    for round_id in round_ids {
+        let bytes = kv_store::get(&rounds_map(), round_id.as_bytes())
+            .map_err(|e| format!("compute-round: could not read round {round_id}: {e}"))?
+            .ok_or_else(|| {
+                format!(
+                    "compute-round: this round follows {round_id}, which has not been \
+                     published. Publish it first, or leave `follows` empty if this is the \
+                     first round."
+                )
+            })?;
+
+        let previous: PublishedRound = serde_json::from_slice(&bytes)
+            .map_err(|e| format!("compute-round: round {round_id} is corrupt: {e}"))?;
+
+        let mut published: std::collections::BTreeSet<String> = Default::default();
+        for b in &previous.round.bands {
+            published.insert(format!("{}|{}|{}", b.role, b.level, b.region));
+        }
+
+        // One contributor set per cell, and only for the cells that round
+        // published: a cell withheld back then emitted no number for anyone to
+        // subtract from now.
+        let mut sets: std::collections::BTreeMap<String, std::collections::BTreeSet<String>> =
+            Default::default();
+        for r in load_round_records(round_id)? {
+            let key = r.cell_key();
+            if published.contains(&key) {
+                sets.entry(key).or_default().insert(r.contributor);
+            }
+        }
+
+        for (key, contributors) in sets {
+            prior
+                .entry(key)
+                .or_insert_with(policy::PriorCell::default)
+                .published_as
+                .push(contributors);
+        }
     }
+
     Ok(prior)
 }
 
