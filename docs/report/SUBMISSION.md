@@ -65,7 +65,7 @@ computed them and then declined to emit the numbers. One failed the
 concentration ceiling, the other the contributor floor — so the demonstration
 shows two independent gates firing rather than one rule repeated.
 
-## 3. The four gates
+## 3. The gates
 
 Compiled into the contract as constants, named in every published round.
 
@@ -75,11 +75,72 @@ Compiled into the contract as constants, named in every published round.
 | Historical data | Effective date ≥ 91 days old | `MIN_DATA_AGE_SECS` |
 | Contributor floor | ≥ 5 firms and ≥ 10 rows per cell | `MIN_CONTRIBUTORS_PER_CELL`, `MIN_RECORDS_PER_CELL` |
 | Concentration ceiling | No firm above 25% of a cell | `MAX_CONTRIBUTOR_SHARE_BPS` |
+| Differencing guard | A cell is republished only if its contributor set is unchanged from every round it appeared in, or differs from each by ≥ 2 firms | `MIN_CONTRIBUTOR_CHURN` |
+
+The first four judge a round on its own. The fifth judges it against every
+round before it, and the published round did not face it: 2026-q1 was the
+first, so it carries `blindband-safe-harbour/v1` and cleared four. Every round
+after it carries v2 and faces five.
 
 Blindband is engineering, not legal advice. The gates follow published
 safe-harbour guidance; fit to a specific consortium is a question for counsel.
 
-## 4. Verification — three tiers of trust
+## 4. What you have to trust, and what you do not
+
+The gates are the interesting part of this system, and they are not the whole
+of what a reader should weigh. This section is the part a sceptic would ask for
+and most write-ups leave out.
+
+**What the design does not ask you to trust.** That the published numbers
+follow from the submissions: recompute them, from a second implementation, in
+one command. That the round was not swapped for a friendlier one afterwards:
+the digest is on devnet, written before you asked and not by anything of ours.
+That your own row was counted: the receipt proves inclusion without revealing
+the value.
+
+**What it does ask you to trust, plainly.** The enclave. If the TEE is broken —
+a side channel, a runtime bug, a compromised node — the sealed submissions are
+readable and nothing in this design would notice. Anchoring protects the output
+from substitution; it does nothing whatsoever for the inputs. This is not
+zero-knowledge and it is not multi-party computation. It is a hardware
+assumption plus an operator who has no code path to the rows, and the honest
+name for it is: trust the enclave, and trust that the tenant registered the
+contract you can read.
+
+Today that assumption cannot even be checked. BB-02 means the sandbox trust
+manifest does not parse, so the SDK cannot attest the node it is talking to and
+every run prints the warning rather than hiding it. The one property a
+confidential-computing platform sells is, on its own sandbox, the one property
+currently unverifiable. That is the largest single gap in this submission and
+it is not closable from the client side.
+
+**What an outsider can check, and what they cannot.** Anyone can recompute this
+round because its submissions are published — they are synthetic, generated for
+the demonstration, and no real payroll has ever gone near this. A real
+consortium would never publish them, and then an outsider can check only that
+the published bytes hash to the anchored digest, while each *member* can check
+their own row was counted. There is no construction here by which a stranger
+verifies an aggregate over data they are not allowed to see. That is inherent
+rather than an omission: it is the reason the enclave is in the design at all.
+
+**The gates are not differential privacy.** They are deterministic thresholds.
+They stop the reconstructions that thresholds can stop — a cell dominated by one
+firm, a cell too thin to describe a market, a change between rounds that one
+firm's arrival or departure explains. They offer no privacy budget and no formal
+bound, and an adversary with outside knowledge (which firms are in the
+consortium, which one was acquired last quarter) reasons about things no
+threshold can see. Calibrated noise would give a formal guarantee and would also
+mean the published median is no longer the median, which is the number a
+benchmark is bought for. That trade was made deliberately in one direction; it
+is a choice, not a proof, and a consortium with a stricter requirement should
+know it is choosing again.
+
+**Withholding is itself information.** A cell that disappears says a single
+organisation moved. That is far less than the numbers it protects, and the
+alternative — a cell that vanishes with no reason given — was rejected
+everywhere else in this ruleset, so it is rejected here too.
+
+## 5. Verification — three tiers of trust
 
 Anyone can check the round, and two of the three checks need nothing from us.
 
@@ -121,7 +182,7 @@ All eight checks passed:
 verdict     : every check passed.
 ```
 
-## 5. The walkthrough
+## 6. The walkthrough
 
 The site replays the five real commands rather than embedding a screen
 recording — the transcript can be paused on the line you care about, the text
@@ -150,7 +211,7 @@ the bands, the withheld reasons, the digest, the slot — is read from the same
 two data files the site reads. `npm run render` in `video/` rebuilds it, so a
 number in the video cannot drift from the round it claims to show.
 
-## 6. Ease of maintenance
+## 7. Ease of maintenance
 
 This was the judging criterion the design was actually organised around.
 
@@ -177,7 +238,7 @@ This was the judging criterion the design was actually organised around.
   GitHub Pages mirror serves from the same commit. Whoever inherits this is not
   inheriting a hosting account along with it.
 
-## 7. The site
+## 8. The site
 
 English is the default; Bahasa Indonesia and 中文 are hand-written, not machine
 -passed — "withheld" and "hidden" mean materially different things here.
@@ -207,7 +268,7 @@ and would have failed, so text amber, green and rust all have their own light
 values, and every pair clears WCAG AA (ivory 17.0:1, quiet 7.5:1, faint 4.7:1,
 signal 5.1:1, published 5.1:1, withheld 6.2:1).
 
-## 8. Bugs
+## 9. Bugs
 
 Twelve write-ups with symptom, cause, fix and cost are on
 [the docs page](https://blindband.vercel.app/en/docs) and in
@@ -323,7 +384,7 @@ the largest remaining gap between what this is and what an agent on this
 platform is meant to be, and it is not closable by writing better code.
 
 
-## 9. Trying it yourself
+## 10. Trying it yourself
 
 The reviewer should not have to take any of the above on trust, and does not
 have to ask us for anything to avoid it. One command, no key, no credits, no
@@ -485,7 +546,7 @@ units to find out. `probe:agent` is the same courtesy applied to BB-11: rather
 than asking anyone to believe that delegated agent provisioning is unavailable
 on the sandbox tier, it makes the call and prints whatever the platform says.
 
-## 10. Status, honestly
+## 11. Status, honestly
 
 The pipeline is real and every number in this report came out of it. Two things
 are open before anyone's actual payroll should go near it:
@@ -518,7 +579,44 @@ And BB-02 means attestation is currently unverifiable against the sandbox node.
 That is a platform issue, but it is a load-bearing one for this product, so it
 belongs in the summary rather than a footnote.
 
-## 11. Continuing or handing over
+## 12. Who runs it, and the questions code cannot answer
+
+A cryptographic mechanism is not yet a system a consortium can operate. Four
+questions decide whether this becomes one, and none of them is answered by any
+line in this repository.
+
+**Who is the neutral aggregator?** Today it is a sandbox tenant belonging to
+the author, which is the one arrangement a real consortium must not accept: the
+first gate says no member sees another's rows, and it means nothing if the
+operator is a member. The candidates are an industry body, the consortium's
+shared counsel, or the platform itself. The code is indifferent — re-pointing
+at a different tenant is two environment variables — and the choice is
+governance, not engineering.
+
+**Who may change the ruleset?** A change is at least *visible*: the ruleset id
+is inside every round and therefore inside the digest that is anchored, so a
+round produced under different rules can never be mistaken for one produced
+under these. What the code does not say is who is allowed to make that change.
+In practice it should be whoever signed off on the gates in the first place,
+and that is a contract between members rather than a permission bit.
+
+**What stops a member submitting false data?** Nothing here does. The gates
+protect members from each other's curiosity, not from each other's lying. A
+firm that inflates its rows moves the band it is measured against, and this
+design cannot detect that, because detecting it would require reading rows —
+which is precisely what it is built not to do. A real deployment needs an
+attested payroll export or a periodic audit of a member's submission against
+their filings. That is a whole second product, and pretending otherwise would
+be the easiest place in this document to be dishonest.
+
+**What does joining or leaving cost?** Joining is a tenant-side ACL change.
+Leaving is more expensive than it looks, and gate 5 is why: a firm that departs
+withholds every cell whose contributor set it alone moved, for that round. That
+is the gate working as intended, and it is also an operational cost a
+consortium should be told about before its first quarter rather than after —
+one member leaving can cost everyone else a band.
+
+## 13. Continuing or handing over
 
 **I would like to keep running it** and take it toward a consortium pilot —
 the interesting work is signing up the first five firms and finding out where
