@@ -215,8 +215,18 @@ number in the video cannot drift from the round it claims to show.
 
 This was the judging criterion the design was actually organised around.
 
+- **A quarter is one command.** `npm run quarter -- --round 2026-q2 --data
+  q2.json --follows 2026-q1` runs preflight, submit, round, anchor and verify in
+  order. It spawns the same scripts a person would run by hand rather than
+  reimplementing them, so there is no second copy of the sequence to drift out
+  of step with the documented one. It stops at the first failure, because every
+  later step reads what an earlier one wrote — anchor before round and you
+  anchor last quarter's digest under this quarter's label. `--dry-run` checks
+  the key and the credits, prints the plan, and spends nothing. A consortium
+  runs this four times a year, which is often enough to forget the order and
+  not often enough to build the habit.
 - **The interesting logic runs without the platform.** `stats.rs` and
-  `policy.rs` are pure and unit-tested; `cargo test` runs 23 tests on the host
+  `policy.rs` are pure and unit-tested; `cargo test` runs 30 tests on the host
   toolchain in under a second, with no node, no enclave and no credits. Only
   `ledger.rs` touches the host, and it is `wasm32` only.
 - **Deploy is idempotent and self-healing.** `npm run deploy` tracks every
@@ -527,7 +537,7 @@ where the digest is recomputed in the browser with the Web Crypto API.
 The gates also carry their own unit tests, with no node and no JavaScript:
 
 ```bash
-cd contract && cargo test     # 23 tests on the percentile maths and the four gates
+cd contract && cargo test     # 30 tests on the percentile maths and the five gates
 ```
 
 Only the third tier — asking the enclave itself — needs a T3N key, because it

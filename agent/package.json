@@ -9,6 +9,7 @@
     "submit": "tsx src/submit.ts",
     "round": "tsx src/round.ts",
     "anchor": "tsx src/anchor.ts",
+    "quarter": "tsx src/quarter.ts",
     "verify": "tsx src/verify.ts",
     "call": "tsx src/call.ts",
     "diagnose": "tsx src/diagnose.ts",

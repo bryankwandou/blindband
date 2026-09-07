@@ -133,7 +133,7 @@ much harder to fake than passing any one of them.
 Only the third check needs the internet. To go further:
 
 ```bash
-cd contract && cargo test    # 23 tests on the gates and the maths — no node, no enclave
+cd contract && cargo test    # 30 tests on the gates and the maths — no node, no enclave
 cd agent && npm run digest   # just the hash, if that is all you want
 npm run probe:agent          # ask the platform whether this tier can hold an agent key
 ```
@@ -247,6 +247,29 @@ Run it against `data/records.json` and the enclave should hand back the same
 digest the replay above derives on your laptop. Run it against your own extract
 and you get a round of your own, anchored under your own signature.
 
+### After the first quarter, it is one command
+
+The sequence above is worth walking through once, because a system whose steps
+are invisible is one nobody can debug. After that, a quarter is a single call:
+
+```bash
+npm run quarter -- --round 2026-q2 --data data/q2.json --follows 2026-q1 --dry-run
+npm run quarter -- --round 2026-q2 --data data/q2.json --follows 2026-q1
+```
+
+It runs preflight, submit, round, anchor and verify in that order, spawning the
+same scripts a person would run by hand rather than reimplementing them — so
+there is no second copy of the sequence to drift out of step with this one. It
+stops at the first failure, because every later step reads what an earlier one
+wrote, and it is safe to run again: submissions are keyed by commitment and
+round, so a repeat does not double-count rows.
+
+`--dry-run` checks the key and the credits, prints the plan, and spends nothing.
+
+Name every earlier round with `--follows`, oldest first. That is what gate 5
+compares against, and a round that omits them goes out under four gates instead
+of five — so the command says which it is doing, every time, before it does it.
+
 ### The site
 
 ```bash
@@ -293,7 +316,7 @@ interesting logic runs under `cargo test` without a node, an enclave, or test
 credits. That is what keeps this maintainable by whoever inherits it.
 
 ```bash
-cd contract && cargo test   # 23 tests, host toolchain, under a second
+cd contract && cargo test   # 30 tests, host toolchain, under a second
 ```
 
 ### The video
