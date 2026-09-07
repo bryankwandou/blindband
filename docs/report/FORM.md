@@ -77,7 +77,9 @@ The first four gates each judge one round alone, and a consortium runs quarterly
 AND YOU CAN RUN IT, NOT JUST AUDIT IT
   cargo run --example replay -- your-payroll.csv
 
-That puts any CSV through the four gates and prints what it would publish, what it would withhold and why, calling policy::aggregate out of the same crate that was compiled to wasm32-wasip2 and registered as the component. `--replay` rebuilds the published round from its own inputs and derives e4f528ad…beef on a laptop with no credentials. The round is not merely consistent, and not merely witnessed by the chain: it is derivable.
+That puts any CSV through the gates and prints what it would publish, what it would withhold and why, calling policy::aggregate out of the same crate that was compiled to wasm32-wasip2 and registered as the component. --replay rebuilds the published round from its own inputs and derives e4f528ad…beef on a laptop with no credentials. The round is not merely consistent, and not merely witnessed by the chain: it is derivable.
+
+A quarter after the first is one command: npm run quarter -- --round 2026-q2 --data ../web/src/data/q2.json --follows 2026-q1. Preflight, submit, round, anchor, verify, in that order, stopping at the first failure. It prices the whole plan against the credit balance before starting any of it, because running out after submit would seal rows into the ledger belonging to a round that was never published, and the ledger does not roll back. --dry-run prints the plan and spends nothing.
 
 TWELVE BUG WRITE-UPS SHIP WITH IT — six platform, six my own — each with symptom, cause, fix and what it cost, at https://blindband.vercel.app/en/docs
 
@@ -92,7 +94,12 @@ WHAT IS NOT DONE, STATED PLAINLY
 
 BB-02 also means attestation cannot currently be verified against the sandbox node, and every run prints that warning rather than hiding it. The first two are not fixable from my side, and none of the three is buried in the report.
 
-The site is in English, Bahasa Indonesia and 中文, with light and dark themes, and the verifier on /verify recomputes the digest in your own browser.
+OR CHECK IT WITHOUT INSTALLING ANYTHING AT ALL
+  https://blindband.vercel.app/en/verify
+
+The same four checks run in your browser, from the same ruleset file the command line imports — not a port of it, so the two cannot reach different verdicts about the same round. Three of the four need no network: the bands are recomputed from the raw submissions, the digest is rehashed from the published bytes, and the two tampered inputs are rejected. The third reads the digest back off devnet through a public endpoint I do not run. One click, no clone, no Node, no account.
+
+The site is in English, Bahasa Indonesia and 中文, with light and dark themes.
 
 Written up as a six-post thread on X, tagging @terminal3io in the last one: https://x.com/nayrbryanGaming/status/2096961287507124434
 ```
